@@ -2,7 +2,7 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 
 // Pages
-import Home from './pages/Home';
+import Home from './pages/Home'; 
 import NotFound from './pages/NotFound';
 
 const AppRoutes = () => {
@@ -15,3 +15,4 @@ const AppRoutes = () => {
 };
 
 export default AppRoutes;
+

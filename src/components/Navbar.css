@@ -1,0 +1,150 @@
+/* LOGIN BUTTON STYLES */
+.login-btn {
+  background: linear-gradient(135deg, #6f42c1, #0d6efd);
+  color: #fff;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 30px;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  animation: pulseFadeIn 0.6s ease-out forwards;
+  animation-delay: 0.3s;
+  opacity: 0;
+  cursor: pointer;
+  transition: all 0.3s ease, transform 0.2s ease-in-out;
+}
+
+.login-btn:hover,
+.login-btn:focus,
+.login-btn:active {
+  background: linear-gradient(135deg, #4244c1, #c10dfd);
+  transform: scale(1.05);
+  box-shadow: 0 6px 14px rgba(29, 28, 28, 0.286);
+  color: white !important;
+  font-size: 1rem;
+}
+
+.login-btn::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0);
+  background: rgba(255, 255, 255, 0.5);
+  animation: ripple 0.6s linear;
+  pointer-events: none;
+}
+
+/* Ripple Animation */
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* Login Button Pulse on Mount */
+@keyframes pulseFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* BRAND TITLE STYLES */
+.brand-title-gradient {
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #0d6efd, #6f42c1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+  
+}
+
+.brand-title-gradient:hover {
+  color: linear-gradient(135deg, #de96f2, #77abf9);
+  text-shadow: 0px 0px 1px rgba(19, 193, 232, 0.473);
+}
+
+/* NAV LINK STYLES */
+.navbar-nav .nav-link {
+  color: #212529 !important;
+  font-weight: 500;
+  font-size: 1.3rem;
+  transition: color 0.2s ease-in-out;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #0d6efd !important;
+}
+
+.navbar-nav .nav-link.active {
+  color: #0d6efd !important;
+  font-weight: 600;
+  border-bottom: 2px solid #0d6efd;
+}
+
+/* NAVBAR WRAPPER */
+nav.navbar {
+  background-color: transparent !important;
+  position: relative;
+  z-index: 1000;
+}
+
+/* LOGO IMAGE */
+.logo-img {
+  height: 40px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
+/* LARGE DEVICES */
+@media (min-width: 992px) {
+  .navbar-nav .nav-link {
+    font-size: 1.2rem;
+  }
+}
+
+/* RESPONSIVE MENU STYLING */
+@media (max-width: 991px) {
+  .navbar-collapse.show {
+    background: linear-gradient(135deg, rgba(143, 187, 253, 0.7), rgba(149, 96, 246, 0.7));
+    backdrop-filter: blur(12px);
+    padding: 1rem 0;
+    z-index: 999;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .navbar-toggler {
+    margin-left: auto;
+  }
+
+  .navbar-nav {
+    text-align: center;
+  }
+}
+
+/* NAVBAR BACKGROUNDS */
+.gradient-bg {
+  background: linear-gradient(135deg, #8fbbfd, #9560f6);
+  transition: background 0.3s ease;
+}
+
+.glass-gradient {
+  background: linear-gradient(135deg, rgba(143, 187, 253, 0.7), rgba(149, 96, 246, 0.7));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: background 0.3s ease;
+}

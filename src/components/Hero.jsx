@@ -65,7 +65,6 @@ const Home = () => {
           <h2 className="text-center mb-5">Why Choose Us?</h2>
           <div className="row text-center">
             <div className="col-md-4">
-              <img src="/assets/images/onboarding.svg" alt="onboarding" className="mb-3" height="80" />
               <h5>Seamless Onboarding</h5>
               <p>Automated workflows for faster employee onboarding.</p>
             </div>

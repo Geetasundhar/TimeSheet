@@ -1,11 +1,17 @@
 import React from 'react';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'; // Needed for toggle
-
+import navbarIcon from '../assets/images/tansamlogo.png'
 const Navbar = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow-sm">
-      <div className="container">
+      <div className="container-fluid">
         <a className="navbar-brand fw-bold" href="#home">
+          <img
+            src={navbarIcon}
+            alt="Logo"
+            height="40"
+            className="d-inline-block align-text-top px-4"
+          />
           Timesheet Tracker
         </a>
 

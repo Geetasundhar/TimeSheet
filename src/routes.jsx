@@ -2,12 +2,8 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import AdminLogin from './pages/AdminLogin';
-import AdminDashboard from './dashboard/admin/AdminDashboard';
+import AdminDashboard from './dashboard/admin/Admindashboard';
 import AdminUsers from './dashboard/admin/AdminUsers';
-
-// Import your components/pages
-import Home from './pages/Home';
-
 import NotFound from './pages/NotFound';
 import Login from './components/Login'; // ✅ Make sure path is correct
 import Employee from './dashboard/Employee';

@@ -1,19 +1,28 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
+
+// Dashboards
 import AdminDashboard from './admin/AdminDashboard';
-
-// (Later you’ll import HR, TL, CEO dashboards too)
-
+import AdminUsers from './admin/AdminUsers';
+// import HRDashboard from './hr/HRDashboard';
+// import TLDashboard from './tl/TLDashboard';
+// import CEODashboard from './ceo/CEODashboard';
 
 const DashboardRouter = () => {
-  const role = "admin"; // Simulate role for now (replace with real one later)
+  const role = "admin"; // 🔁 Replace with real logic (e.g., from context or token)
 
-  if (role === "admin") return <AdminDashboard />;
-  
-  // else if (role === "hr") return <HRDashboard />;
-  // else if (role === "tl") return <TLDashboard />;
-  // else if (role === "ceo") return <CEODashboard />;
-  else return <Navigate to="/" replace />;
+  switch (role) {
+    case "admin":
+      return <AdminDashboard />;
+    // case "hr":
+    //   return <HRDashboard />;
+    // case "tl":
+    //   return <TLDashboard />;
+    // case "ceo":
+    //   return <CEODashboard />;
+    default:
+      return <Navigate to="/" replace />;
+  }
 };
 
 export default DashboardRouter;

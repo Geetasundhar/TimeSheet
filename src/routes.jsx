@@ -1,31 +1,30 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
+
+// ✅ Page Components
 import Home from './pages/Home';
 import AdminLogin from './pages/AdminLogin';
-import AdminDashboard from './dashboard/admin/AdminDashboard';
-import AdminUsers from './dashboard/admin/AdminUsers';
-
-// Import your components/pages
-import Home from './pages/Home';
-
+import Login from './components/Login';
 import NotFound from './pages/NotFound';
-import Login from './components/Login'; // ✅ Make sure path is correct
 import Employee from './dashboard/Employee';
+
+// ✅ Dashboard Router (Role-based)
+import DashboardRouter from './dashboard/DashboardRouter';
+
 const AppRoutes = () => {
   return (
     <Routes>
-      {/* Public Routes */}
+      {/* 🔹 Public Routes */}
       <Route path="/" element={<Home />} />
-      <Route path="/login" element={<AdminLogin />} />
+      <Route path="/login" element={<AdminLogin />} /> {/* Admin login */}
+      <Route path="/employee" element={<Employee />} /> {/* If you still need this */}
+      <Route path="/user-login" element={<Login />} />   {/* Generic login (if needed) */}
 
-      {/* Admin Routes */}
-      <Route path="/admin" element={<AdminDashboard />} />
-      <Route path="/admin/users" element={<AdminUsers />} />
+      {/* 🔹 Role-Based Dashboard Router */}
+      <Route path="/dashboard" element={<DashboardRouter />} />
 
-      {/* Catch-All */}
-      <Route path="/login" element={<Login />} /> {/* ✅ Login Route */}
+      {/* 🔹 Not Found Route */}
       <Route path="*" element={<NotFound />} />
-      <Route path="/Employee" element={<Employee />} />
     </Routes>
   );
 };

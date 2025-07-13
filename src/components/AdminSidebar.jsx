@@ -1,28 +1,20 @@
 import React from 'react';
+import profileImg from "../assets/images/tansamlogo.png";
 import {
   FaTachometerAlt,
-  FaUserPlus,
-  FaProjectDiagram,
   FaClipboardList,
   FaUsers,
-  FaCog,
-  FaPowerOff,
+  FaSignOutAlt,
 } from 'react-icons/fa';
 import { Link, useLocation } from 'react-router-dom';
 
-
-
 const AdminSidebar = () => {
-  console.log("AdminSidebar loaded");
   const location = useLocation();
 
   const navItems = [
     { label: 'Dashboard', icon: <FaTachometerAlt />, path: '/admin' },
-    { label: 'Add User', icon: <FaUserPlus />, path: '/admin/add-user' },
-    { label: 'Projects', icon: <FaProjectDiagram />, path: '/admin/projects' },
     { label: 'Reports', icon: <FaClipboardList />, path: '/admin/reports' },
-    { label: 'Users', icon: <FaUsers />, path: '/admin/users' },
-    { label: 'Settings', icon: <FaCog />, path: '/admin/settings' },
+    { label: 'Members', icon: <FaUsers />, path: '/admin/users' },
   ];
 
   const handleLinkClick = () => {
@@ -34,17 +26,29 @@ const AdminSidebar = () => {
   return (
     <div
       id="adminSidebar"
-      className="admin-sidebar bg-primary text-white vh-100 position-fixed"
+      className="admin-sidebar bg-primary text-white vh-100 position-fixed d-flex flex-column"
       style={{
         width: '220px',
         transition: 'transform 0.3s ease',
         zIndex: 1000,
       }}
     >
-      <div className="p-4 text-center border-bottom border-white">
-        <h4 className="fw-bold mb-0">TimeTrack Admin</h4>
+      {/* 🔹 Admin Profile Section */}
+      <div className="d-flex align-items-center p-3 border-bottom border-white">
+        <img
+          src={profileImg}
+          alt="Admin"
+          className="rounded-circle me-3"
+          width="50"
+          height="50"
+        />
+        <div>
+          <h6 className="mb-0 fw-semibold text-white">John David</h6>
+          <small className="text-light">Admin</small>
+        </div>
       </div>
 
+      {/* 🔹 Navigation Items */}
       <ul className="nav flex-column mt-4 px-3">
         {navItems.map((item, index) => (
           <li key={index} className="nav-item mb-2">
@@ -60,19 +64,19 @@ const AdminSidebar = () => {
             </Link>
           </li>
         ))}
-
-        <li className="nav-item mt-5">
-          <Link
-            to="/logout"
-            className="nav-link text-white d-flex align-items-center"
-            onClick={handleLinkClick}
-          >
-            <FaPowerOff className="me-2" /> Logout
-          </Link>
-        </li>
       </ul>
+
+      {/* 🔹 Logout Button at Bottom */}
+      <div className="mt-auto px-3 pb-4">
+        <Link
+          to="/logout"
+          className="nav-link text-white d-flex align-items-center"
+          onClick={handleLinkClick}
+        >
+          <FaSignOutAlt className="me-2" /> Logout
+        </Link>
+      </div>
     </div>
-    
   );
 };
 

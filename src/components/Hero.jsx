@@ -1,6 +1,7 @@
 import React from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button } from 'react-bootstrap'; // Ensure you installed react-bootstrap
+import '../App.css';
 
 const Home = () => {
   return (
@@ -104,67 +105,90 @@ const Home = () => {
 
       {/* Features Section */}
       <section className="features-section py-5">
-        <div className="container">
-          <h2 className="text-center mb-5">Key Features</h2>
-          <div className="row g-4">
-            <div className="col-md-3">
-              <div className="card h-100 shadow-sm">
-                <div className="card-body text-center">
-                  <h5 className="card-title">Employee Database</h5>
-                  <p className="card-text">Maintain centralized employee records.</p>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-3">
-              <div className="card h-100 shadow-sm">
-                <div className="card-body text-center">
-                  <h5 className="card-title">Leave Management</h5>
-                  <p className="card-text">Automate leave tracking and approvals.</p>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-3">
-              <div className="card h-100 shadow-sm">
-                <div className="card-body text-center">
-                  <h5 className="card-title">Attendance Tracking</h5>
-                  <p className="card-text">Monitor employee attendance effortlessly.</p>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-3">
-              <div className="card h-100 shadow-sm">
-                <div className="card-body text-center">
-                  <h5 className="card-title">Performance Reviews</h5>
-                  <p className="card-text">Streamline appraisals and feedback.</p>
-                </div>
-              </div>
+  <div className="container">
+    <h2 className="text-center mb-5">Key Features</h2>
+    <div className="row g-4">
+      {[
+        {
+          title: "Employee Database",
+          text: "Maintain centralized employee records.",
+        },
+        {
+          title: "Leave Management",
+          text: "Automate leave tracking and approvals.",
+        },
+        {
+          title: "Attendance Tracking",
+          text: "Monitor employee attendance effortlessly.",
+        },
+        {
+          title: "Performance Reviews",
+          text: "Streamline appraisals and feedback.",
+        },
+      ].map((feature, index) => (
+        <div className="col-md-3" key={index}>
+          <div className="card feature-card h-100 shadow-sm border-0">
+            <div className="card-body text-center">
+              <h5 className="card-title">{feature.title}</h5>
+              <p className="card-text">{feature.text}</p>
             </div>
           </div>
         </div>
-      </section>
+      ))}
+    </div>
+  </div>
+</section>
+
 
       {/* Use Cases / Modules */}
-      <section className="usecases-section bg-light py-5">
-        <div className="container">
-          <h2 className="text-center mb-5">Why Choose Us?</h2>
-          <div className="row text-center">
-            <div className="col-md-4">
-              <h5>Seamless Onboarding</h5>
-              <p>Automated workflows for faster employee onboarding.</p>
-            </div>
-            <div className="col-md-4">
-              <img src="/assets/images/automation.svg" alt="Automation" className="mb-3" height="80" />
-              <h5>Smart Automation</h5>
-              <p>Automate repetitive HR tasks and focus on people.</p>
-            </div>
-            <div className="col-md-4">
-              <img src="/assets/images/analytics.svg" alt="Analytics" className="mb-3" height="80" />
-              <h5>Advanced Analytics</h5>
-              <p>Data-driven insights to improve HR decisions.</p>
-            </div>
-          </div>
+  <section className="usecases-section py-5">
+  <div className="container">
+    <h2 className="text-center mb-5">Why Choose Us?</h2>
+    <div className="row text-center">
+      <div className="col-md-4">
+        <div className="usecase-card p-4">
+          <img
+            src="/assets/images/onboarding.png"
+            alt="Onboarding"
+            className="mb-3"
+            style={{filter:"none"}}
+            height="80"
+        
+          />
+          <h5>Seamless Onboarding</h5>
+          <p>Automated workflows for faster employee onboarding.</p>
         </div>
-      </section>
+      </div>
+      <div className="col-md-4">
+        <div className="usecase-card p-4">
+          <img
+            src="/assets/images/automation-cover.png"
+            alt="Automation"
+            className="mb-3"
+            height="80"
+            style={{filter:"none"}}
+          />
+          <h5>Smart Automation</h5>
+          <p>Automate repetitive HR tasks and focus on people.</p>
+        </div>
+      </div>
+      <div className="col-md-4">
+        <div className="usecase-card p-4">
+          <img
+            src="/assets/images/analytics.png"
+            alt="Analytics"
+            className="mb-3"
+            height="80"
+            style={{filter:"none"}}
+          />
+          <h5>Advanced Analytics</h5>
+          <p>Data-driven insights to improve HR decisions.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
       {/* Projects / Modules Section */}
 <section className="projects-section py-5 bg-light">
   <div className="container">
@@ -185,7 +209,11 @@ const Home = () => {
     <div className="row g-4 align-items-center mb-5 animate__animated animate__fadeInLeft">
       <div className="col-md-6">
         <img
+<<<<<<< Updated upstream
           src="/assets/images/management.png"
+=======
+          src="/assets/images/automation-cover.png"
+>>>>>>> Stashed changes
           alt="HR Management"
           style={{
             width: '100%',
@@ -458,6 +486,7 @@ const Home = () => {
 
 
       {/* Final CTA Band */}
+<<<<<<< Updated upstream
       <section className="cta-section bg-primary text-white text-center py-5">
         <div className="container">
           <h2>Start Managing Your Workforce Better</h2>
@@ -472,6 +501,25 @@ const Home = () => {
     background: 'rgb(255,255,255)', // soft purple background
   }}
 >
+=======
+
+
+<section className="cta-section text-white text-center">
+  <div className="cta-wrapper">
+    <h2 className="mb-3">Start Managing Your Workforce Better</h2>
+    <p className="mb-4">Try it free for 15 days. No credit card required.</p>
+    <Button variant="light" className="px-4 py-2 fw-semibold shadow-sm cta-button">
+      Sign Up Now
+    </Button>
+  </div>
+</section>
+
+
+
+
+      {/* Trusted Partners */}
+<section className="partners-section py-5 bg-white">
+>>>>>>> Stashed changes
   <div className="container text-center">
     <h2
       className="mb-4 fw-bold"

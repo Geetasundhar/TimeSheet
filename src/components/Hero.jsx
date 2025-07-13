@@ -84,21 +84,6 @@ const Home = () => {
     </button>
   </div>
 </section>
-
-
-  {/* Key Features Section (example) */}
-  <section
-    className="key-features"
-    style={{
-      marginTop: '20px', // Reduced top space
-      padding: '20px',
-      textAlign: 'center',
-    }}
-  >
-    <h2>Key Features</h2>
-    <p>Some quick features of our HR management system.</p>
-    {/* Add features here */}
-  </section>
 </main>
 
 
@@ -209,11 +194,7 @@ const Home = () => {
     <div className="row g-4 align-items-center mb-5 animate__animated animate__fadeInLeft">
       <div className="col-md-6">
         <img
-<<<<<<< Updated upstream
           src="/assets/images/management.png"
-=======
-          src="/assets/images/automation-cover.png"
->>>>>>> Stashed changes
           alt="HR Management"
           style={{
             width: '100%',
@@ -486,24 +467,7 @@ const Home = () => {
 
 
       {/* Final CTA Band */}
-<<<<<<< Updated upstream
-      <section className="cta-section bg-primary text-white text-center py-5">
-        <div className="container">
-          <h2>Start Managing Your Workforce Better</h2>
-          <p className="mb-4">Try it free for 15 days. No credit card required.</p>
-          <Button variant="light" className="px-4 py-2">Sign Up Now</Button>
-        </div>
-      </section>
-     {/* Trusted Partners */}
-<section
-  className="partners-section py-5"
-  style={{
-    background: 'rgb(255,255,255)', // soft purple background
-  }}
->
-=======
-
-
+   
 <section className="cta-section text-white text-center">
   <div className="cta-wrapper">
     <h2 className="mb-3">Start Managing Your Workforce Better</h2>
@@ -519,7 +483,6 @@ const Home = () => {
 
       {/* Trusted Partners */}
 <section className="partners-section py-5 bg-white">
->>>>>>> Stashed changes
   <div className="container text-center">
     <h2
       className="mb-4 fw-bold"

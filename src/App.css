@@ -1,0 +1,114 @@
+/* Key features in homepage */
+
+/* App.css */
+
+.feature-card {
+  transition: all 0.3s ease;
+  background-color: #ffffff;
+  border-radius: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+/* On hover/tap: lift the card, apply deeper shadow */
+.feature-card:hover,
+.feature-card:focus,
+.feature-card:active {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 12px 20px rgba(109, 108, 192, 0.15); /* deeper, softer shadow */
+  background-color: #ffffff; /* keep the card white */
+  z-index: 10; /* ensures it's above others */
+  cursor: pointer;
+}
+
+
+/*why choose us section*/
+
+/* Use Case Section Background */
+.usecases-section {
+  background-color: #f0f4ff;              /* Soft light-blue backdrop */
+  padding-top: 60px;                      /* Top padding */
+  padding-bottom: 20px !important;        /* Reduced bottom padding */
+}
+
+/* Use Case Cards */
+.usecase-card {
+  background: linear-gradient(135deg, #6a82fb, #9f5de2);  /* Blue-purple gradient */
+  border-radius: 12px;
+  color: #ffffff;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  min-height: 220px;
+  margin-bottom: 0;                       /* Remove extra spacing under card */
+  padding: 1.5rem 1.5rem 0.75rem 1.5rem;   /* Top, sides, reduced bottom padding */
+}
+
+/* Hover Pop Effect */
+.usecase-card:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
+  background: linear-gradient(135deg, #7a67ee, #a674f6); /* Brighter hover */
+  cursor: pointer;
+}
+
+/* Card Text */
+.usecase-card h5,
+.usecase-card p {
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+}
+
+/* Card Icons */
+.usecase-card img {
+  filter: brightness(0) invert(1); /* Make icons white on dark background */
+  margin-bottom: 0.75rem;
+}
+
+
+/* cta-sign up section */
+
+/* Full-width section with background and outer padding */
+.cta-section {
+  background: linear-gradient(135deg, #6a82fb, #9f5de2);
+  color: #fff;
+  padding: 3rem 1rem;         /* Top/bottom + left/right padding */
+  width: 70vw;
+  box-sizing: border-box;
+  border-radius: 16px;
+  margin: 0 auto;
+  margin-top: 60px;
+}
+
+/* Inner centered content */
+.cta-wrapper {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+/* Text styling */
+.cta-wrapper h2 {
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.cta-wrapper p {
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Button effects */
+.cta-button {
+  transition: all 0.3s ease;
+}
+
+.cta-button:hover {
+  background-color: #ffffff;
+  color: #6a82fb;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+
+

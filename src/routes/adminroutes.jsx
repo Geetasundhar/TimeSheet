@@ -1,10 +1,11 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
-import Login from './components/Login';
-import AdminDashboard from './dashboard/admin/AdminDashboard';
-import Employee from './dashboard/Employee';
-import NotFound from './pages/NotFound';
+
+import Home from '../pages/Home';
+import Login from '../components/Login';
+import AdminDashboard from '../dashboard/admin/AdminDashboard';
+import Employee from '../dashboard/Employee';
+import NotFound from '../pages/NotFound';
 
 const AppRoutes = () => {
   return (
@@ -16,10 +17,10 @@ const AppRoutes = () => {
       {/* Admin Route */}
       <Route path="/admin" element={<AdminDashboard />} />
 
-      {/* Employee Dashboard Route */}
+      {/* Employee Route */}
       <Route path="/employee" element={<Employee />} />
 
-      {/* Catch-all route for 404 */}
+      {/* Fallback Route */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

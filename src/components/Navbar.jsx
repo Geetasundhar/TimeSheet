@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 import './Navbar.css'; 
-import navbarIcon from '../assets/images/tansamlogo.png';
+import navbarIcon from '/assets/images/tansamlogo.png';
 
 const Navbar = () => {
 

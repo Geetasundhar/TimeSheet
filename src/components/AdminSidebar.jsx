@@ -1,20 +1,16 @@
 import React from 'react';
-import profileImg from "../assets/images/tansamlogo.png";
-import {
-  FaTachometerAlt,
-  FaClipboardList,
-  FaUsers,
-  FaSignOutAlt,
-} from 'react-icons/fa';
+import { FaUserPlus, FaTachometerAlt, FaUsers, FaSignOutAlt, FaHome} from 'react-icons/fa';
 import { Link, useLocation } from 'react-router-dom';
+import profileImg from "/assets/images/sampleimage.png";
 
 const AdminSidebar = () => {
   const location = useLocation();
 
   const navItems = [
-    { label: 'Dashboard', icon: <FaTachometerAlt />, path: '/admin' },
-    { label: 'Reports', icon: <FaClipboardList />, path: '/admin/reports' },
-    { label: 'Members', icon: <FaUsers />, path: '/admin/users' },
+    { label: 'Home', icon: <FaHome />, path: '/' },
+    { label: 'Dashboard', icon: <FaTachometerAlt />, path: '/dashboard/admin' },
+    { label: 'Add Member', icon: <FaUserPlus />, path: '/dashboard/admin/add-member' },
+    { label: 'Members', icon: <FaUsers />, path: '/dashboard/admin/members' },
   ];
 
   const handleLinkClick = () => {
@@ -28,9 +24,11 @@ const AdminSidebar = () => {
       id="adminSidebar"
       className="admin-sidebar bg-primary text-white vh-100 position-fixed d-flex flex-column"
       style={{
+        top: 0,
+        left: 0,
         width: '220px',
-        transition: 'transform 0.3s ease',
-        zIndex: 1000,
+        zIndex: 999,
+        overflowY: 'auto',
       }}
     >
       {/* 🔹 Admin Profile Section */}
@@ -54,8 +52,8 @@ const AdminSidebar = () => {
           <li key={index} className="nav-item mb-2">
             <Link
               to={item.path}
-              className={`nav-link text-white d-flex align-items-center ${
-                location.pathname === item.path ? 'bg-light text-primary rounded' : ''
+              className={`sidebar-link nav-link d-flex align-items-center rounded px-3 py-2 ${
+                location.pathname === item.path ? 'active' : 'text-white'
               }`}
               onClick={handleLinkClick}
             >
@@ -66,16 +64,35 @@ const AdminSidebar = () => {
         ))}
       </ul>
 
-      {/* 🔹 Logout Button at Bottom */}
+      {/* 🔹 Logout Button */}
       <div className="mt-auto px-3 pb-4">
         <Link
           to="/logout"
-          className="nav-link text-white d-flex align-items-center"
+          className="sidebar-link nav-link d-flex align-items-center text-white"
           onClick={handleLinkClick}
         >
           <FaSignOutAlt className="me-2" /> Logout
         </Link>
       </div>
+
+      {/* 🔹 Styles */}
+      <style>{`
+        .sidebar-link:hover {
+          background-color: #1f5fa4;
+          transform: translateX(5px);
+          text-decoration: none;
+        }
+
+        .sidebar-link.active {
+          background-color: #ffffff;
+          color: #003366 !important;
+          font-weight: 600;
+        }
+
+        .sidebar-link {
+          transition: all 0.3s ease;
+        }
+      `}</style>
     </div>
   );
 };

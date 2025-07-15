@@ -1,28 +1,29 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
-
-// Dashboards
+import { Routes, Route } from 'react-router-dom';
+import AdminLayout from './admin/AdminLayout'; 
 import AdminDashboard from './admin/AdminDashboard';
-import AdminUsers from './admin/AdminUsers';
-// import HRDashboard from './hr/HRDashboard';
-// import TLDashboard from './tl/TLDashboard';
-// import CEODashboard from './ceo/CEODashboard';
+import AddMember from './admin/AddMember';
+import Members from './admin/Members';
+import Department from './admin/Department'; 
+import TotalProject from './admin/TotalProject';
+import BillableHours from './admin/BillableHours';
+
+
 
 const DashboardRouter = () => {
-  const role = "admin"; // 🔁 Replace with real logic (e.g., from context or token)
+  return (
+    <Routes>
+      <Route path="admin" element={<AdminLayout />}>
+      <Route index element={<AdminDashboard />} /> // 
+      <Route path="add-member" element={<AddMember />} /> 
+      <Route path="members" element={<Members />} />
+      <Route path="departments" element={<Department />} />
+      <Route path="projects" element={<TotalProject />} />
+      <Route path="billable-hours" element={<BillableHours />} />
+     </Route>
 
-  switch (role) {
-    case "admin":
-      return <AdminDashboard />;
-    // case "hr":
-    //   return <HRDashboard />;
-    // case "tl":
-    //   return <TLDashboard />;
-    // case "ceo":
-    //   return <CEODashboard />;
-    default:
-      return <Navigate to="/" replace />;
-  }
+    </Routes>
+  );
 };
 
 export default DashboardRouter;

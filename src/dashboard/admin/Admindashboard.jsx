@@ -1,218 +1,122 @@
-import React, { useState } from 'react';
-import AdminSidebar from '../../components/AdminSidebar';
-import AdminTopbar from '../../components/AdminTopbar';
+import React from 'react';
+import { FaUserFriends, FaProjectDiagram, FaClock, FaBuilding } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 const AdminDashboard = () => {
-  const [users, setUsers] = useState([]);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    role: 'hr',
-    phone: '',
-    employeeId: '',
-    password: '',
-  });
+  const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setUsers([...users, { ...formData }]);
-    setFormData({
-      name: '',
-      email: '',
-      role: 'hr',
-      phone: '',
-      employeeId: '',
-      password: '',
-    });
-  };
+  const cards = [
+    {
+      title: 'Total Users',
+      value: '2,500',
+      change: 'All active',
+      icon: <FaUserFriends />,
+      bg: 'linear-gradient(135deg, #f5576c, #f093fb)',
+      path: 'members',
+    },
+    {
+      title: 'Total Projects',
+      value: '5',
+      change: 'Ongoing & Completed',
+      icon: <FaProjectDiagram />,
+      bg: 'linear-gradient(135deg, #36d1dc, #5b86e5)',
+      path: 'projects',
+    },
+    {
+      title: 'Billable Hours',
+      value: '420',
+      change: 'This month',
+      icon: <FaClock />,
+      bg: 'linear-gradient(135deg, #43e97b, #38f9d7)',
+      path: 'billable-hours',
+    },
+    {
+      title: 'Departments',
+      value: '6',
+      change: 'Updated structure',
+      icon: <FaBuilding />,
+      bg: 'linear-gradient(135deg, #ff9966, #ff5e62)',
+      path: 'departments',
+    },
+  ];
 
   return (
-    <div className="d-flex">
-      {/* Sidebar */}
-      <AdminSidebar />
+    <div className="container-fluid px-4 py-4">
+      <h2 className="fw-bold mb-4">Welcome Admin</h2>
 
-      {/* Main content */}
-      <div className="flex-grow-1" style={{ marginLeft: '220px' }}>
-        <AdminTopbar />
+      {/* Gradient Cards */}
+      <div className="row g-4">
+        {cards.map((card, index) => (
+          <div className="col-md-3" key={index}>
+            <div
+              className="card-box p-4 text-white"
+              style={{ background: card.bg, cursor: 'pointer' }}
+              onClick={() => navigate(card.path)}
+            >
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <h6 className="mb-0">{card.title}</h6>
+                <span className="fs-5">{card.icon}</span>
+              </div>
+              <h3 className="fw-bold">{card.value}</h3>
+              <p className="mb-0" style={{ fontSize: '0.9rem' }}>{card.change}</p>
+            </div>
+          </div>
+        ))}
+      </div>
 
-        {/* Sidebar toggle button (☰) for mobile */}
-        <div className="d-lg-none text-end p-2">
-          <button
-            className="btn btn-outline-light bg-primary"
-            onClick={() => {
-              const sidebar = document.getElementById('adminSidebar');
-              if (sidebar) {
-                sidebar.classList.toggle('d-none');
-              }
-            }}
-          >
-            ☰ Menu
-          </button>
+      {/* Analytics Placeholder */}
+      <div className="row mt-4 g-4">
+        <div className="col-md-6">
+          <div className="chart-card p-4">
+            <h5 className="fw-semibold mb-3">Visit And Sales Statistics</h5>
+            <div className="chart-placeholder">Bar/Line chart placeholder</div>
+          </div>
         </div>
-
-        {/* Content */}
-        <div className="container py-4">
-          {/* Summary Cards */}
-          <div className="row g-4 mb-4">
-            <div className="col-md-3">
-              <div className="card text-center shadow-sm">
-                <div className="card-body">
-                  <h5 className="card-title">2500</h5>
-                  <p className="card-text text-muted">Total Users</p>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-3">
-              <div className="card text-center shadow-sm">
-                <div className="card-body">
-                  <h5 className="card-title">5</h5>
-                  <p className="card-text text-muted">Total Projects</p>
-                </div>
-              </div>
-            </div>
+        <div className="col-md-6">
+          <div className="chart-card p-4">
+            <h5 className="fw-semibold mb-3">Traffic Sources</h5>
+            <div className="chart-placeholder">Donut/Pie chart placeholder</div>
           </div>
-
-          {/* Page Title */}
-          <div className="text-center mb-4">
-            <h2 className="fw-bold">Admin Dashboard</h2>
-            <p className="text-muted">Manage users and assign roles to access the system.</p>
-          </div>
-
-          {/* Add New User Form */}
-          <div className="card shadow-sm border-0 mb-5">
-            <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-              <h5 className="mb-0">Add New User</h5>
-              <button className="btn btn-light btn-sm" type="submit" form="addUserForm">
-                Add User
-              </button>
-            </div>
-            <div className="card-body">
-              <form onSubmit={handleSubmit} id="addUserForm">
-                <div className="row g-3">
-                  <div className="col-md-4">
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="name"
-                      placeholder="Full Name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div className="col-md-4">
-                    <input
-                      type="email"
-                      className="form-control"
-                      name="email"
-                      placeholder="Email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div className="col-md-4">
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="phone"
-                      placeholder="Phone Number"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div className="col-md-4">
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="employeeId"
-                      placeholder="Employee ID"
-                      value={formData.employeeId}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div className="col-md-4">
-                    <select
-                      className="form-select"
-                      name="role"
-                      value={formData.role}
-                      onChange={handleChange}
-                    >
-                      <option value="hr">HR</option>
-                      <option value="tl">Team Lead</option>
-                      <option value="ceo">CEO</option>
-                    </select>
-                  </div>
-                  <div className="col-md-4">
-                    <input
-                      type="password"
-                      className="form-control"
-                      name="password"
-                      placeholder="Password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                </div>
-              </form>
-            </div>
-          </div>
-
-          {/* User Table */}
-          <div className="card shadow-sm border-0">
-            <div className="card-header bg-secondary text-white">
-              <h5 className="mb-0">Created Users</h5>
-            </div>
-            <div className="card-body">
-              <table className="table table-bordered table-striped table-hover align-middle mb-0">
-                <thead className="table-light">
-                  <tr>
-                    <th>#</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                    <th>Employee ID</th>
-                    <th>Role</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {users.length > 0 ? (
-                    users.map((user, index) => (
-                      <tr key={index}>
-                        <td>{index + 1}</td>
-                        <td>{user.name}</td>
-                        <td>{user.email}</td>
-                        <td>{user.phone}</td>
-                        <td>{user.employeeId}</td>
-                        <td>
-                          <span className={`badge bg-${user.role === 'hr' ? 'primary' : user.role === 'tl' ? 'warning' : 'dark'}`}>
-                            {user.role.toUpperCase()}
-                          </span>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="6" className="text-center text-muted py-4">
-                        No users added yet.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
         </div>
       </div>
+
+      {/* Styles */}
+      <style>{`
+        .card-box {
+          border-radius: 16px;
+          color: white;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          transition: transform 0.3s ease;
+        }
+
+        .card-box:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .chart-card {
+          background: #81b2e2ff;
+          border-radius: 12px;
+          border: 1px solid #ddd;
+          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+          transition: all 0.3s ease;
+        }
+
+        .chart-card:hover {
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .chart-placeholder {
+          background: #e9ecef;
+          height: 220px;
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #666;
+          font-size: 1rem;
+        }
+      `}</style>
     </div>
   );
 };

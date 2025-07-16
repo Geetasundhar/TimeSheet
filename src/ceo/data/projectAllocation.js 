@@ -1,0 +1,7 @@
+const projectAllocation = [
+  { name: "Project Alpha", value: 45 },
+  { name: "Project Beta", value: 30 },
+  { name: "Project Gamma", value: 25 },
+];
+
+export default projectAllocation;

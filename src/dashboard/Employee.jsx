@@ -11,7 +11,7 @@ const Employee = () => {
 
   const employeeId = localStorage.getItem('employeeId');
   const employeeName = localStorage.getItem('employeeName');
-  const employeePhoto = localStorage.getItem('employeePhoto'); // Set photo URL in localStorage
+  const employeePhoto = localStorage.getItem('employeePhoto');
 
   const [selected, setSelected] = useState(null);
   const [calendarDate, setCalendarDate] = useState(new Date());
@@ -24,10 +24,10 @@ const Employee = () => {
     yearly: '',
   };
 
-  const presentPercent = ''; 
-  const absentPercent = ''; 
+  const presentPercent = '';
+  const absentPercent = '';
 
-  const presentDates = []; 
+  const presentDates = []; // e.g., ['2025-07-15']
   const absentDates = [];
 
   const handleLogout = () => {
@@ -172,10 +172,13 @@ const Employee = () => {
               ))}
             </div>
 
-            {/* Attendance Percent */}
+            {/* Attendance Percent Cards with Light Green and Red */}
             <div className="row g-4 mt-4">
               <div className="col-md-6">
-                <div className="card shadow-sm bg-success text-white text-center">
+                <div
+                  className="card shadow-sm text-center"
+                  style={{ backgroundColor: '#d4edda', color: '#155724' }} // Light green
+                >
                   <div className="card-body">
                     <h5>Present Percentage</h5>
                     <p className="fs-3">{presentPercent || 'Coming Soon'}</p>
@@ -183,7 +186,10 @@ const Employee = () => {
                 </div>
               </div>
               <div className="col-md-6">
-                <div className="card shadow-sm bg-danger text-white text-center">
+                <div
+                  className="card shadow-sm text-center"
+                  style={{ backgroundColor: '#f8d7da', color: '#721c24' }} // Light red
+                >
                   <div className="card-body">
                     <h5>Absent Percentage</h5>
                     <p className="fs-3">{absentPercent || 'Coming Soon'}</p>
@@ -222,21 +228,22 @@ const Employee = () => {
         </div>
       </div>
 
-      {/* Custom Calendar Tile Colors */}
+      {/* Calendar Tile Colors */}
       <style>{`
         .present-day {
-          background-color: #28a745 !important;
-          color: white !important;
+          background-color: #d4edda !important; /* Light green */
+          color: #155724 !important;
           border-radius: 6px;
         }
         .absent-day {
-          background-color: #dc3545 !important;
-          color: white !important;
+          background-color: #f8d7da !important; /* Light red */
+          color: #721c24 !important;
           border-radius: 6px;
         }
         .second-saturday {
-          background-color: #ffc107 !important;
-          color: black !important;
+          background-color: #fff3cd !important;
+          color: #856404 !important;
+          border-radius: 6px;
         }
       `}</style>
     </div>

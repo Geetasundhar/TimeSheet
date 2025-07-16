@@ -49,7 +49,7 @@ const Members = () => {
       <div className="table-responsive shadow-sm rounded">
         <table className="table table-hover align-middle bg-white">
           <thead className="table-light">
-            <tr>
+            <tr className='table-head'>
               <th>Employee ID</th>
               <th>Name</th>
               <th>Email</th>
@@ -183,6 +183,9 @@ const Members = () => {
       )}
 
       <style>{`
+        .table-head{
+          background-color:blue;
+        }
         .table td, .table th {
           vertical-align: middle;
         }

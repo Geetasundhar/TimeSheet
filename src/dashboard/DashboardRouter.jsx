@@ -21,7 +21,6 @@ const DashboardRouter = () => {
       <Route path="projects" element={<TotalProject />} />
       <Route path="billable-hours" element={<BillableHours />} />
      </Route>
-
     </Routes>
   );
 };

@@ -1,21 +1,25 @@
-import React from "react";
-import { Route } from "react-router-dom";
-import CEOLayout from "./CEOLayout";
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import CEODashboard from './pages/CEODashboard';
+import Analytics from './pages/Analytics';
+import AllEntries from './pages/AllEntries';
+import TeamReports from './pages/TeamReports';
+import EmployeeLogs from './pages/EmployeeLogs';
+import CEOLayout from './CEOLayout'; // sidebar + layout
 
-// CEO pages
-import CEODashboard from "./pages/CEODashboard";
-import Analytics from "./pages/Analytics";
-import EmployeeLogs from "./pages/EmployeeLogs";
-import TeamReports from "./pages/TeamReports";
-import AllEntries from "./pages/AllEntries";
+const CEORoutes = () => {
+  return (
+    <Routes>
+      <Route path="/" element={<CEOLayout />}>
+        <Route index element={<CEODashboard />} />
+        <Route path="analytics" element={<Analytics />} />
+        <Route path="employee-logs" element={<EmployeeLogs />} />
+        <Route path="team-reports" element={<TeamReports />} />
+        <Route path="all-entries" element={<AllEntries />} />
+        <Route path="*" element={<h2>404 - Page Not Found</h2>} />
+      </Route>
+    </Routes>
+  );
+};
 
-// Export CEO routes as an array of <Route> elements
-export const CEORoutes = [
-  <Route path="/ceo" element={<CEOLayout />} key="ceo">
-    <Route index element={<CEODashboard />} />
-    <Route path="analytics" element={<Analytics />} />
-    <Route path="employee-logs" element={<EmployeeLogs />} />
-    <Route path="team-reports" element={<TeamReports />} />
-    <Route path="all-entries" element={<AllEntries />} />
-  </Route>,
-];
+export default CEORoutes;

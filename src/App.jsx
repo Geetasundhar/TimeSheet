@@ -61,7 +61,7 @@ const App = () => {
         <Route path="/dashboard/employee" element={<Employee />} />
 
         {/* CEO Routes */}
-        <Route path="/dashboard/ceo" element={<CEOLayout />}>
+        <Route path="/ceo" element={<CEOLayout />}>
           <Route index element={<CEODashboard />} />
           <Route path="analytics" element={<Analytics />} />
           <Route path="employee-logs" element={<EmployeeLogs />} />
@@ -71,7 +71,7 @@ const App = () => {
         </Route>
 
         {/* HR Routes */}
-        <Route path="/dashboard/hr" element={<HRLayout />}>
+        <Route path="/hr" element={<HRLayout />}>
           <Route index element={<HRDashboard />} />
           <Route path="dashboard" element={<HRDashboard />} />
           <Route path="create-project" element={<CreateProject />} />

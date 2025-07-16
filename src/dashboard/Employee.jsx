@@ -11,7 +11,7 @@ const Employee = () => {
 
   const employeeId = localStorage.getItem('employeeId');
   const employeeName = localStorage.getItem('employeeName');
-  const employeePhoto = localStorage.getItem('employeePhoto'); // Set photo URL in localStorage
+  const employeePhoto = localStorage.getItem('employeePhoto');
 
   const [selected, setSelected] = useState(null);
   const [calendarDate, setCalendarDate] = useState(new Date());
@@ -24,10 +24,10 @@ const Employee = () => {
     yearly: '',
   };
 
-  const presentPercent = ''; 
-  const absentPercent = ''; 
+  const presentPercent = ''; // You can update this later
+  const absentPercent = '';  // You can update this later
 
-  const presentDates = []; 
+  const presentDates = [];
   const absentDates = [];
 
   const handleLogout = () => {
@@ -36,7 +36,7 @@ const Employee = () => {
   };
 
   const handleCardClick = (label) => {
-    setSelected(label === selected ? null : label);
+    setSelected(label);
   };
 
   const scrollToDashboard = () => {
@@ -49,21 +49,8 @@ const Employee = () => {
     return date.toISOString().split('T')[0];
   };
 
-  const filteredLabels = selected
-    ? Object.entries(efficiency)
-        .filter(([key]) => key === selected.toLowerCase())
-        .map(([key, value]) => ({
-          label: key.charAt(0).toUpperCase() + key.slice(1),
-          value,
-        }))
-    : Object.entries(efficiency).map(([key, value]) => ({
-        label: key.charAt(0).toUpperCase() + key.slice(1),
-        value,
-      }));
-
   return (
     <div className="d-flex" style={{ minHeight: '100vh' }}>
-      {/* Sidebar */}
       {sidebarOpen && (
         <div
           className="text-white d-flex flex-column justify-content-between p-3"
@@ -113,12 +100,10 @@ const Employee = () => {
         </div>
       )}
 
-      {/* Main Content */}
       <div
         className="flex-grow-1 bg-light"
         style={{ marginLeft: sidebarOpen ? '250px' : '0', width: '100%' }}
       >
-        {/* Topbar */}
         <div
           className="d-flex justify-content-between align-items-center px-4 py-3 shadow"
           style={{
@@ -141,44 +126,53 @@ const Employee = () => {
         </div>
 
         <div className="p-4" ref={dashboardRef}>
-          {selected && (
-            <div className="mb-3 text-end">
-              <button
-                className="btn"
-                style={{ backgroundColor: '#0099ff', color: 'white' }}
-                onClick={() => setSelected(null)}
-              >
-                Show All
-              </button>
-            </div>
-          )}
-
-          {/* Efficiency Cards */}
           <div className="container">
+            {/* Efficiency Cards */}
             <div className="row g-4">
-              {filteredLabels.map((item, index) => (
-                <div key={index} className="col-md-6">
-                  <div
-                    className="card text-center shadow-sm h-100"
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => handleCardClick(item.label)}
-                  >
-                    <div className="card-body">
-                      <h5 className="card-title text-primary">{item.label}</h5>
-                      <p className="card-text fs-4">{item.value || 'Not updated'}</p>
+              {Object.entries(efficiency).map(([key, value], index) => {
+                const label = key.charAt(0).toUpperCase() + key.slice(1);
+                const isSelected = selected === label;
+                return (
+                  <div key={index} className="col-md-6">
+                    <div
+                      className={`card text-center shadow-sm h-100 ${
+                        isSelected ? 'border-primary border-3' : ''
+                      }`}
+                      style={{
+                        cursor: 'pointer',
+                        backgroundColor: isSelected ? '#e6f0ff' : 'white',
+                      }}
+                      onClick={() => handleCardClick(label)}
+                    >
+                      <div className="card-body">
+                        <h5 className="card-title text-primary">{label}</h5>
+                        <p className="card-text fs-4">Not updated</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
-            {/* Attendance Percent */}
+            {/* Selected Box Details */}
+            {selected && (
+              <div className="mt-4">
+                <div className="card shadow-sm">
+                  <div className="card-body">
+                    <h5 className="card-title text-primary">{selected} Efficiency Details</h5>
+                    <p className="card-text">Not updated</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Attendance Percent Cards */}
             <div className="row g-4 mt-4">
               <div className="col-md-6">
                 <div className="card shadow-sm bg-success text-white text-center">
                   <div className="card-body">
                     <h5>Present Percentage</h5>
-                    <p className="fs-3">{presentPercent || 'Coming Soon'}</p>
+                    <p className="fs-3">{presentPercent || 'Not updated'}</p>
                   </div>
                 </div>
               </div>
@@ -186,13 +180,13 @@ const Employee = () => {
                 <div className="card shadow-sm bg-danger text-white text-center">
                   <div className="card-body">
                     <h5>Absent Percentage</h5>
-                    <p className="fs-3">{absentPercent || 'Coming Soon'}</p>
+                    <p className="fs-3">{absentPercent || 'Not updated'}</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Calendar */}
+            {/* Attendance Calendar */}
             <div className="mt-5">
               <h4 className="mb-3">Attendance Calendar</h4>
               <Calendar
@@ -203,7 +197,6 @@ const Employee = () => {
                   if (presentDates.includes(formatted)) return 'present-day';
                   if (absentDates.includes(formatted)) return 'absent-day';
 
-                  // Mark 2nd Saturday
                   const isSaturday = date.getDay() === 6;
                   const month = date.getMonth();
                   const year = date.getFullYear();
@@ -222,7 +215,6 @@ const Employee = () => {
         </div>
       </div>
 
-      {/* Custom Calendar Tile Colors */}
       <style>{`
         .present-day {
           background-color: #28a745 !important;

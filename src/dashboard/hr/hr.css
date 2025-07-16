@@ -1,0 +1,32 @@
+.hr-layout {
+  height: 100vh;
+  background-color: #f5f7ff;
+}
+
+.hr-sidebar {
+  width: 220px;
+  background: linear-gradient(to bottom, #4c4cff, #7373ff);
+  color: white;
+  height: 100vh;
+}
+
+.hr-sidebar h5 {
+  font-weight: 600;
+}
+
+.hr-sidebar .nav-link {
+  color: white;
+  margin-bottom: 10px;
+}
+
+.hr-sidebar .nav-link.active {
+  background-color: #ffffff33;
+  border-radius: 6px;
+}
+
+.hr-main {
+  flex: 1;
+  overflow-y: auto;
+  background-color: #ffffff;
+  border-left: 1px solid #e0e0e0;
+}

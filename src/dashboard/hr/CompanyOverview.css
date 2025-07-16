@@ -1,0 +1,36 @@
+/* CompanyOverview.css */
+
+.company-overview-container {
+  background: linear-gradient(to right, #eef2ff, #f5f7ff);
+  padding: 2rem;
+  border-radius: 12px;
+  max-width: 700px;
+  margin: 2rem auto;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.company-overview-container:hover {
+  transform: scale(1.01);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+}
+
+.company-overview-container h3 {
+  text-align: center;
+  color: #2e3a59;
+  margin-bottom: 1.5rem;
+}
+
+.company-overview-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.3s ease;
+}
+
+.company-overview-card p {
+  font-size: 1rem;
+  color: #444;
+  margin-bottom: 0.75rem;
+}

@@ -24,7 +24,7 @@ const Login = () => {
 
       {/* Home Icon */}
       <a href="/" style={styles.homeIcon}>
-        <i className="bi bi-house-fill" style={{ fontSize: '24px', color: '#fff' }}></i>
+        <i className="bi bi-house-fill" style={{ fontSize: '24px', color: 'dark grey' }}></i>
       </a>
 
       <div className="container d-flex justify-content-center align-items-center vh-100">

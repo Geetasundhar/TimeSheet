@@ -1,29 +1,36 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
+
 import Home from './pages/Home';
 import AdminLogin from './pages/AdminLogin';
-import AdminDashboard from './dashboard/admin/Admindashboard';
+import AdminDashboard from './dashboard/admin/AdminDashboard';
 import NotFound from './pages/NotFound';
-import Login from './components/Login'; 
+import Login from './components/Login';
 import Employee from './dashboard/Employee';
-
-// 👇 Import CEO Routes
+import DashboardRouter from './dashboard/DashboardRouter';
 import { CEORoutes } from './ceo/routes';
 
 const AppRoutes = () => {
   return (
     <Routes>
-      {/* Public Routes */}
+      {/* Home and Auth */}
       <Route path="/" element={<Home />} />
-      <Route path="/login" element={<AdminLogin />} />
-      <Route path="/Employee" element={<Employee />} />
-      <Route path="/admin" element={<AdminDashboard />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/user-login" element={<Login />} />
 
-      {/* 👇 CEO Routes */}
+      {/* Admin Routes */}
+      <Route path="/admin" element={<AdminDashboard />} />
+
+      {/* Employee Routes */}
+      <Route path="/employee" element={<Employee />} />
+
+      {/* Dashboard Router */}
+      <Route path="/dashboard/*" element={<DashboardRouter />} />
+
+      {/* CEO Routes */}
       {CEORoutes}
 
-      {/* Catch-All */}
+      {/* 404 Not Found */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

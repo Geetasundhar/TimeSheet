@@ -1,28 +1,16 @@
 import React from 'react';
-import {
-  FaTachometerAlt,
-  FaUserPlus,
-  FaProjectDiagram,
-  FaClipboardList,
-  FaUsers,
-  FaCog,
-  FaPowerOff,
-} from 'react-icons/fa';
+import { FaUserPlus, FaTachometerAlt, FaUsers, FaSignOutAlt, FaHome} from 'react-icons/fa';
 import { Link, useLocation } from 'react-router-dom';
-
-
+import profileImg from "/assets/images/sampleimage.png";
 
 const AdminSidebar = () => {
-  console.log("AdminSidebar loaded");
   const location = useLocation();
 
   const navItems = [
-    { label: 'Dashboard', icon: <FaTachometerAlt />, path: '/admin' },
-    { label: 'Add User', icon: <FaUserPlus />, path: '/admin/add-user' },
-    { label: 'Projects', icon: <FaProjectDiagram />, path: '/admin/projects' },
-    { label: 'Reports', icon: <FaClipboardList />, path: '/admin/reports' },
-    { label: 'Users', icon: <FaUsers />, path: '/admin/users' },
-    { label: 'Settings', icon: <FaCog />, path: '/admin/settings' },
+    { label: 'Home', icon: <FaHome />, path: '/' },
+    { label: 'Dashboard', icon: <FaTachometerAlt />, path: '/dashboard/admin' },
+    { label: 'Add Member', icon: <FaUserPlus />, path: '/dashboard/admin/add-member' },
+    { label: 'Members', icon: <FaUsers />, path: '/dashboard/admin/members' },
   ];
 
   const handleLinkClick = () => {
@@ -34,24 +22,38 @@ const AdminSidebar = () => {
   return (
     <div
       id="adminSidebar"
-      className="admin-sidebar bg-primary text-white vh-100 position-fixed"
+      className="admin-sidebar bg-primary text-white vh-100 position-fixed d-flex flex-column"
       style={{
+        top: 0,
+        left: 0,
         width: '220px',
-        transition: 'transform 0.3s ease',
-        zIndex: 1000,
+        zIndex: 999,
+        overflowY: 'auto',
       }}
     >
-      <div className="p-4 text-center border-bottom border-white">
-        <h4 className="fw-bold mb-0">TimeTrack Admin</h4>
+      {/* 🔹 Admin Profile Section */}
+      <div className="d-flex align-items-center p-3 border-bottom border-white">
+        <img
+          src={profileImg}
+          alt="Admin"
+          className="rounded-circle me-3"
+          width="50"
+          height="50"
+        />
+        <div>
+          <h6 className="mb-0 fw-semibold text-white">John David</h6>
+          <small className="text-light">Admin</small>
+        </div>
       </div>
 
+      {/* 🔹 Navigation Items */}
       <ul className="nav flex-column mt-4 px-3">
         {navItems.map((item, index) => (
           <li key={index} className="nav-item mb-2">
             <Link
               to={item.path}
-              className={`nav-link text-white d-flex align-items-center ${
-                location.pathname === item.path ? 'bg-light text-primary rounded' : ''
+              className={`sidebar-link nav-link d-flex align-items-center rounded px-3 py-2 ${
+                location.pathname === item.path ? 'active' : 'text-white'
               }`}
               onClick={handleLinkClick}
             >
@@ -60,19 +62,38 @@ const AdminSidebar = () => {
             </Link>
           </li>
         ))}
-
-        <li className="nav-item mt-5">
-          <Link
-            to="/logout"
-            className="nav-link text-white d-flex align-items-center"
-            onClick={handleLinkClick}
-          >
-            <FaPowerOff className="me-2" /> Logout
-          </Link>
-        </li>
       </ul>
+
+      {/* 🔹 Logout Button */}
+      <div className="mt-auto px-3 pb-4">
+        <Link
+          to="/logout"
+          className="sidebar-link nav-link d-flex align-items-center text-white"
+          onClick={handleLinkClick}
+        >
+          <FaSignOutAlt className="me-2" /> Logout
+        </Link>
+      </div>
+
+      {/* 🔹 Styles */}
+      <style>{`
+        .sidebar-link:hover {
+          background-color: #1f5fa4;
+          transform: translateX(5px);
+          text-decoration: none;
+        }
+
+        .sidebar-link.active {
+          background-color: #ffffff;
+          color: #003366 !important;
+          font-weight: 600;
+        }
+
+        .sidebar-link {
+          transition: all 0.3s ease;
+        }
+      `}</style>
     </div>
-    
   );
 };
 

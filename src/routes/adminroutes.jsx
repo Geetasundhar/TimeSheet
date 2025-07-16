@@ -3,7 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 
 import Home from '../pages/Home';
 import Login from '../components/Login';
-import AdminDashboard from '../dashboard/admin/AdminDashboard';
+import AdminDashboard from '../dashboard/admin/Admindashboard';
 import Employee from '../dashboard/Employee';
 import NotFound from '../pages/NotFound';
 

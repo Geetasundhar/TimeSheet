@@ -58,7 +58,7 @@ const AdminTopbar = ({ onToggle }) => {
       </div>
 
       <div className="px-4 pt-3">
-        <h3 className="fw-bold">Admin Dashboard</h3>
+        <h3 className="fw-bold admin-dashboard-heading">Admin Dashboard</h3>
       </div>
 
       {/* 🔹 Edit Modal */}
@@ -141,6 +141,12 @@ const AdminTopbar = ({ onToggle }) => {
           background: none;
           border: none;
         }
+        .admin-dashboard-heading {
+  background: linear-gradient(90deg, #4b86b4, #3a6d99);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 1.75rem;
+}
       `}</style>
     </>
   );

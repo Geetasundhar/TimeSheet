@@ -1,4 +1,8 @@
+// src/pages/Login.js
+
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { users } from '../data/users'; // adjust path if needed
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
@@ -7,9 +11,34 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [showForgot, setShowForgot] = useState(false);
   const [email, setEmail] = useState('');
+  const navigate = useNavigate();
 
   const handleLogin = () => {
-    alert(`Logging in with ID: ${id}`);
+    const user = users.find(u => u.empId === id && u.password === password);
+
+    if (user) {
+      switch (user.role) {
+        case 'admin':
+          navigate('/dashboard/admin');
+          break;
+        case 'hr':
+          navigate('/hr/dashboard');
+          break;
+        case 'ceo':
+          navigate('/ceo');
+          break;
+        case 'employee':
+          navigate('/dashboard/employee');
+          break;
+        case 'teamlead':
+          navigate('/tl/dashboard');
+          break;
+        default:
+          alert('Unknown role');
+      }
+    } else {
+      alert('Invalid Employee ID or Password');
+    }
   };
 
   const handleForgotSubmit = () => {
@@ -24,7 +53,7 @@ const Login = () => {
 
       {/* Home Icon */}
       <a href="/" style={styles.homeIcon}>
-        <i className="bi bi-house-fill" style={{ fontSize: '24px', color: 'dark grey' }}></i>
+        <i className="bi bi-house-fill" style={{ fontSize: '24px', color: 'darkgrey' }}></i>
       </a>
 
       <div className="container d-flex justify-content-center align-items-center vh-100">
@@ -37,7 +66,7 @@ const Login = () => {
                 <input
                   type="text"
                   className="form-control"
-                  placeholder="Enter ID"
+                  placeholder="Enter Employee ID"
                   value={id}
                   onChange={(e) => setId(e.target.value)}
                 />
@@ -91,7 +120,6 @@ const Login = () => {
   );
 };
 
-
 const styles = {
   wrapper: {
     position: 'relative',
@@ -123,7 +151,6 @@ const styles = {
     zIndex: 1,
   },
 };
-
 
 const styleSheet = document.createElement('style');
 styleSheet.innerHTML = `

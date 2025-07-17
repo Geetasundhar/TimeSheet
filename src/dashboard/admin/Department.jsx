@@ -11,8 +11,8 @@ const Department = () => {
   ];
 
   return (
-    <div className="container-fluid px-4 py-4">
-      <h2 className="fw-bold mb-4">Departments</h2>
+    <div className="container-fluid px-4 py-4 department-page-bg">
+      <h2 className="fw-bold mb-4 department-heading">Departments</h2>
 
       <div className="row g-4">
         {departments.map((dept, index) => (
@@ -26,27 +26,39 @@ const Department = () => {
         ))}
       </div>
 
-      {/* Inline Styles */}
       <style>{`
+        .department-page-bg {
+          background: #eaf3fb;
+          min-height: 100vh;
+        }
+
+        .department-heading {
+          background: linear-gradient(to right, #4b86b4, #3a6d99);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          font-size: 1.75rem;
+        }
+
         .dept-card {
           background: #ffffff;
-          border-radius: 16px;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-          border: 1px solid #e0e0e0;
-          transition: all 0.3s ease;
+          border-radius: 18px;
+          border: 1px solid #d7e6f2;
+          box-shadow: 0 4px 16px rgba(75, 134, 180, 0.15);
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .dept-card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+          transform: translateY(-6px);
+          box-shadow: 0 10px 24px rgba(58, 109, 153, 0.2);
         }
 
         .dept-card h5 {
-          color: #003366;
+          color: #3a6d99;
         }
 
         .dept-card p {
           font-size: 0.95rem;
+          color: #444;
         }
       `}</style>
     </div>

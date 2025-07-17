@@ -44,18 +44,18 @@ const Members = () => {
 
   return (
     <div className="container-fluid px-4 py-4">
-      <h2 className="fw-bold mb-4">Members List</h2>
+      <h2 className="fw-bold mb-4 text-primary">Members List</h2>
 
       <div className="table-responsive shadow-sm rounded">
-        <table className="table table-hover align-middle bg-white">
-          <thead className="table-light">
-            <tr className='table-head'>
+        <table className="table table-bordered table-hover align-middle bg-white">
+          <thead className="bg-primary text-white">
+            <tr>
               <th>Employee ID</th>
               <th>Name</th>
               <th>Email</th>
               <th>Phone</th>
               <th>Role</th>
-              <th style={{ width: '120px' }}>Actions</th>
+              <th style={{ width: '150px' }}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -67,18 +67,20 @@ const Members = () => {
                 <td>{member.phone}</td>
                 <td>{member.role.toUpperCase()}</td>
                 <td>
-                  <button
-                    className="btn btn-sm btn-outline-primary me-2"
-                    onClick={() => setEditingMember(member)}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="btn btn-sm btn-outline-danger mt-1"
-                    onClick={() => handleDelete(member.id)}
-                  >
-                    Delete
-                  </button>
+                  <div className="d-flex justify-content-center gap-2 flex-wrap">
+                    <button
+                      className="btn btn-sm btn-outline-primary"
+                      onClick={() => setEditingMember(member)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="btn btn-sm btn-outline-danger"
+                      onClick={() => handleDelete(member.id)}
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -182,26 +184,34 @@ const Members = () => {
         </div>
       )}
 
+      {/* Inline Styles */}
       <style>{`
-        .table-head{
-          background-color:blue;
-        }
-        .table td, .table th {
-          vertical-align: middle;
+        .table th {
+          background-color: #0d6efd !important;
+          color: white !important;
         }
 
-        .modal-backdrop {
-          display: none;
+        .table td, .table th {
+          vertical-align: middle;
+          border: 1px solid #dee2e6;
+        }
+
+        .btn-outline-primary:hover {
+          background-color: #0d6efd;
+          color: white;
+        }
+
+        .btn-outline-danger:hover {
+          background-color: #dc3545;
+          color: white;
         }
 
         .modal-content {
           border-radius: 16px;
         }
 
-        .modal-body .form-control,
-        .modal-body .form-select {
+        .form-control, .form-select {
           border-radius: 10px;
-          padding: 10px;
         }
 
         .btn-close {

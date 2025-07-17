@@ -1,0 +1,231 @@
+/* ---------- Global Styles ---------- */
+body {
+  background: linear-gradient(180deg, #e6f0ff 0%, #ffffff 100%);
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+.container {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding:50px;
+  box-shadow: 0 10px 30px rgba(0, 123, 255, 0.1);
+  animation: fadeSlideIn 0.8s ease;
+}
+
+/* ---------- Animations ---------- */
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 0 rgba(0, 123, 255, 0);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(0, 123, 255, 0.4);
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(0, 123, 255, 0);
+  }
+}
+
+@keyframes zoomFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideLeftIn {
+  0% {
+    transform: translateX(60px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes ripple {
+  to {
+    box-shadow: 0 0 0 15px rgba(0, 123, 255, 0);
+  }
+}
+
+/* ---------- Controls ---------- */
+select.form-select {
+  border: 1px solid #007bff;
+  transition: 0.3s ease-in-out;
+  animation: zoomFadeIn 0.4s ease;
+}
+select.form-select:focus {
+  border-color: #0056b3;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+}
+
+/* ---------- Week Cards ---------- */
+.card {
+  border: 1px solid #d4eaff;
+  background-color: #f0f8ff;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  position: relative;
+  overflow: hidden;
+  animation: fadeSlideIn 0.5s ease;
+}
+.card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
+}
+.card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 123, 255, 0.1);
+  opacity: 0;
+  transition: 0.3s;
+}
+.card:hover::after {
+  opacity: 1;
+}
+
+.card.bg-primary {
+  background-color: #007bff !important;
+  color: white;
+}
+
+/* ---------- Table ---------- */
+.table {
+  transition: all 0.2s ease-in-out;
+  animation: zoomFadeIn 0.6s ease;
+}
+.table thead th {
+  background-color: #e3f2fd;
+  color: #004085;
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+td {
+  transition: all 0.25s ease;
+  cursor: pointer;
+  position: relative;
+  animation: zoomFadeIn 0.3s ease;
+}
+td:hover {
+  background-color: rgba(0, 123, 255, 0.05);
+}
+td div:hover {
+  transform: scale(1.05);
+  transition: transform 0.3s ease;
+}
+
+td.bg-success,
+td.bg-danger,
+td.bg-warning,
+td.bg-info {
+  animation: glow 1.5s infinite ease-in-out;
+}
+
+/* ---------- Sticky Note Icon ---------- */
+svg {
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+svg:hover {
+  transform: rotate(10deg) scale(1.3);
+  color: #007bff;
+}
+
+/* ---------- Buttons ---------- */
+button.btn {
+  transition: all 0.3s ease-in-out;
+  animation: fadeSlideIn 0.8s ease;
+}
+button.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
+}
+.btn-success {
+  animation: glow 2s infinite;
+}
+.btn-outline-primary:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+/* ---------- Textarea ---------- */
+textarea.form-control {
+  transition: all 0.2s ease-in-out;
+  border-color: #007bff;
+  animation: fadeSlideIn 0.5s ease;
+}
+textarea.form-control:focus {
+  border-color: #0056b3;
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
+}
+
+/* ---------- Chart Headings ---------- */
+h5 {
+  color: #003e7e;
+  margin-bottom: 10px;
+  animation: slideLeftIn 0.6s ease;
+}
+
+/* ---------- Chart Canvas ---------- */
+canvas {
+  max-width: 100% !important;
+  margin: auto;
+  animation: zoomFadeIn 0.6s ease-in-out;
+}
+
+/* ---------- Summary Table ---------- */
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: #f4faff;
+}
+.table-dark th {
+  background-color: #004085;
+  color: #fff;
+}
+
+/* ---------- Misc ---------- */
+.table-bordered td,
+.table-bordered th {
+  border: 1px solid #dee2e6;
+}
+/* TimesheetCalendar.css */
+/* TimesheetCalendar.css */
+.uniform-summary-card {
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+@media (max-width: 991px) {
+  .summary-card {
+    text-align: center;
+  }
+
+  .nav-tabs {
+    flex-wrap: wrap;
+  }
+
+  .nav-tabs .nav-item {
+    flex: 1 0 100%;
+    text-align: center;
+  }
+}

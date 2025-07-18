@@ -1,8 +1,8 @@
 // src/layouts/AdminLayout.jsx
 import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom'; 
-import AdminSidebar from '../../components/AdminSidebar';
-import AdminTopbar from '../../components/AdminTopbar';
+import AdminSidebar from './AdminSidebar';
+import AdminTopbar from './AdminTopbar';
 
 const AdminLayout = () => {
   const [isSidebarVisible, setSidebarVisible] = useState(true);

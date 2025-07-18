@@ -1,20 +1,31 @@
-// src/pages/Login.js
-
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { users } from '../data/users'; // adjust path if needed
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap-icons/font/bootstrap-icons.css';
+import {
+  Card,
+  CardContent,
+  Typography,
+  TextField,
+  Button,
+  Box,
+} from '@mui/material';
+import { Link, useNavigate } from 'react-router-dom';
+import HomeIcon from '@mui/icons-material/Home';
+import './Login.css'; // Animation keyframes
+import { users } from '../data/users'; // Adjust path if needed
 
 const Login = () => {
-  const [id, setId] = useState('');
-  const [password, setPassword] = useState('');
-  const [showForgot, setShowForgot] = useState(false);
-  const [email, setEmail] = useState('');
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({ id: '', password: '' });
 
-  const handleLogin = () => {
-    const user = users.find(u => u.empId === id && u.password === password);
+  const handleChange = (e) => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+
+    const user = users.find(
+      u => u.empId === formData.id && u.password === formData.password
+    );
 
     if (user) {
       switch (user.role) {
@@ -22,16 +33,13 @@ const Login = () => {
           navigate('/dashboard/admin');
           break;
         case 'hr':
-          navigate('/hr/dashboard');
-          break;
-        case 'ceo':
-          navigate('/ceo');
-          break;
-        case 'employee':
-          navigate('/dashboard/employee');
+          navigate('/hr');
           break;
         case 'teamlead':
           navigate('/tl/dashboard');
+          break;
+        case 'employee':
+          navigate('/dashboard/Employee');
           break;
         default:
           alert('Unknown role');
@@ -41,81 +49,62 @@ const Login = () => {
     }
   };
 
-  const handleForgotSubmit = () => {
-    alert(`Password reset link sent to ${email}`);
-    setEmail('');
-    setShowForgot(false);
-  };
-
   return (
     <div style={styles.wrapper}>
+      {/* Animated Background */}
       <div style={styles.animatedBackground}></div>
 
       {/* Home Icon */}
-      <a href="/" style={styles.homeIcon}>
-        <i className="bi bi-house-fill" style={{ fontSize: '24px', color: 'darkgrey' }}></i>
-      </a>
+      <Link to="/" style={styles.homeIcon}>
+        <HomeIcon fontSize="large" />
+      </Link>
 
-      <div className="container d-flex justify-content-center align-items-center vh-100">
-        <div className="card p-4 shadow-lg" style={styles.card}>
-          <h2 className="text-center mb-4">Login</h2>
-
-          {!showForgot ? (
-            <>
-              <div className="mb-3">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Enter Employee ID"
-                  value={id}
-                  onChange={(e) => setId(e.target.value)}
-                />
-              </div>
-
-              <div className="mb-3">
-                <input
-                  type="password"
-                  className="form-control"
-                  placeholder="Enter Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-
-              <button className="btn btn-primary w-100 mb-2" onClick={handleLogin}>
-                Login
-              </button>
-
-              <p
-                className="text-primary text-decoration-underline text-center"
-                style={{ cursor: 'pointer' }}
-                onClick={() => setShowForgot(true)}
+      {/* Login Form Card */}
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100vh"
+        zIndex={1}
+      >
+        <Card style={styles.card}>
+          <CardContent>
+            <Typography variant="h5" gutterBottom>
+              Login
+            </Typography>
+            <form onSubmit={handleLogin}>
+              <TextField
+                label="Employee ID"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                name="id"
+                value={formData.id}
+                onChange={handleChange}
+              />
+              <TextField
+                label="Password"
+                type="password"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+              />
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                fullWidth
+                style={{ marginTop: '16px' }}
               >
-                Forgot Password?
-              </p>
-            </>
-          ) : (
-            <>
-              <h5 className="text-center">Reset Password</h5>
-              <div className="mb-3">
-                <input
-                  type="email"
-                  className="form-control"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-              <button className="btn btn-primary w-100 mb-2" onClick={handleForgotSubmit}>
-                Send Reset Link
-              </button>
-              <button className="btn btn-secondary w-100" onClick={() => setShowForgot(false)}>
-                Back to Login
-              </button>
-            </>
-          )}
-        </div>
-      </div>
+                Login
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </Box>
     </div>
   );
 };
@@ -136,29 +125,22 @@ const styles = {
     backgroundSize: '400% 400%',
     animation: 'gradientAnimation 15s ease infinite',
     zIndex: -1,
+    pointerEvents: 'none',
   },
   homeIcon: {
     position: 'absolute',
     top: '20px',
     left: '20px',
-    zIndex: 10,
+    zIndex: 2,
     textDecoration: 'none',
+    color: '#000',
   },
   card: {
     maxWidth: '400px',
     width: '100%',
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    zIndex: 1,
+    zIndex: 2,
   },
 };
-
-const styleSheet = document.createElement('style');
-styleSheet.innerHTML = `
-@keyframes gradientAnimation {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}`;
-document.head.appendChild(styleSheet);
 
 export default Login;

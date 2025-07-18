@@ -28,7 +28,7 @@ const AddMember = () => {
     e.preventDefault();
 
     const passwordRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+      /^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[@$!%*?&]).{8,}$/;
 
     if (!passwordRegex.test(formData.password)) {
       alert('Password must include uppercase, lowercase, number, special character and be at least 8 characters long.');
@@ -55,12 +55,17 @@ const AddMember = () => {
   };
 
   return (
+  <>
+    {successMessage && (
+      <div className="custom-toast">Member added successfully!</div>
+    )}
+
     <div className="container-fluid px-4 py-4">
       <h2 className="fw-bold mb-4 text-primary">Add New Member</h2>
-
-      {successMessage && <div className="custom-toast">{successMessage}</div>}
-
-      <div className="card shadow-sm border-0 p-4 mx-auto add-member-card" style={{ maxWidth: '960px' }}>
+      <div
+        className="card shadow-sm border-0 p-4 mx-auto add-member-card"
+        style={{ maxWidth: '960px' }}
+      >
         <form onSubmit={handleSubmit}>
           <div className="row g-4">
             <div className="col-md-4">
@@ -132,17 +137,8 @@ const AddMember = () => {
                   required
                 />
                 <span
+                  className="password-toggle-icon"
                   onClick={() => setShowPassword(!showPassword)}
-                  style={{
-                    position: 'absolute',
-                    top: '50%',
-                    right: '16px',
-                    transform: 'translateY(-50%)',
-                    cursor: 'pointer',
-                    color: '#6c757d',
-                    fontSize: '1rem',
-                    zIndex: 10
-                  }}
                 >
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </span>
@@ -171,14 +167,23 @@ const AddMember = () => {
           border-radius: 20px;
         }
 
-        .form-control, .form-select {
+        .form-control,
+        .form-select {
           border-radius: 12px;
           padding: 12px;
           border: 1px solid #c2ced9;
           box-shadow: none;
+          background-color: #fff;
+          transition: none !important;
         }
 
-        .form-control:focus, .form-select:focus {
+        .form-control:hover,
+        .form-select:hover {
+          background-color: #fff !important;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
           border-color: #4682b4;
           box-shadow: 0 0 0 0.1rem rgba(70, 130, 180, 0.25);
         }
@@ -207,10 +212,35 @@ const AddMember = () => {
           font-weight: 500;
           z-index: 1055;
           border: 1px solid #c3e6cb;
+          pointer-events: none;
+        }
+
+        .position-relative {
+          position: relative;
+        }
+
+        .password-toggle-icon {
+          position: absolute;
+          top: 50%;
+          right: 14px;
+          transform: translateY(-50%);
+          cursor: pointer;
+          color: #6c757d;
+          font-size: 1rem;
+          z-index: 5;
+          background: #fff;
+          padding: 2px;
+        }
+
+        .container-fluid {
+          background-color: rgba(255, 255, 255, 0.9);
+          position: relative;
+          z-index: 1;
         }
       `}</style>
     </div>
-  );
-};
+  </>
+);
+}
 
 export default AddMember;

@@ -37,13 +37,10 @@ const Employee = () => {
     yearly: '85%',
   };
 
-
-
   const presentPercent = '75%';
   const absentPercent = '25%';
 
-  const presentDates = []; // e.g., ['2025-07-15']
-  // You can update this later
+  const presentDates = []; // Update as needed
   const absentDates = [];
 
   const handleLogout = () => {
@@ -146,7 +143,7 @@ const Employee = () => {
       )}
 
       <div className="flex-grow-1" style={{ marginLeft: sidebarOpen ? '250px' : '0', padding: '2rem', width: '100%' }}>
-        <div className="d-flex justify-content-between align-items-center px-4 py-3 rounded shadow-sm mb-4" style={{ backgroundColor: '#ffffff', color: '#000', position: 'sticky', top: 0, zIndex: 1000, marginTop: '0px' }}>
+        <div className="d-flex justify-content-between align-items-center px-4 py-3 rounded shadow-sm mb-4" style={{ backgroundColor: '#ffffff', color: '#000', position: 'sticky', top: 0, zIndex: 1000 }}>
           <button className="btn border d-flex align-items-center justify-content-center me-3" style={{ width: '40px', height: '40px' }} onClick={() => setSidebarOpen(!sidebarOpen)}>
             <i className="bi bi-list"></i>
           </button>
@@ -170,50 +167,11 @@ const Employee = () => {
                       <p className="card-text fs-4">{item.value || 'Not updated'}</p>
                     </div>
                   </div>
-
-                );
-              })}
-            </div>
-
-
-            {/* Attendance Percent Cards with Light Green and Red */}
-      {/* Selected Box Details */}
-            {selected && (
-              <div className="mt-4">
-                <div className="card shadow-sm">
-                  <div className="card-body">
-                    <h5 className="card-title text-primary">{selected} Efficiency Details</h5>
-                    <p className="card-text">Not updated</p>
-                  </div>
-
                 </div>
               );
             })}
           </div>
 
-
-            {/* Attendance Percent Cards */}
-
-            <div className="row g-4 mt-4">
-              <div className="col-md-6">
-                <div
-                  className="card shadow-sm text-center"
-                  style={{ backgroundColor: '#d4edda', color: '#155724' }} // Light green
-                >
-                  <div className="card-body">
-                    <h5>Present Percentage</h5>
-                    <p className="fs-3">{presentPercent || 'Not updated'}</p>
-                  </div>
-                </div>
-              </div>
-              <div className="col-md-6">
-                <div
-                  className="card shadow-sm text-center"
-                  style={{ backgroundColor: '#f8d7da', color: '#721c24' }} // Light red
-                >
-                  <div className="card-body">
-                    <h5>Absent Percentage</h5>
-                    <p className="fs-3">{absentPercent || 'Not updated'}</p>
           {selected && (
             <div className="mb-4">
               <div className="card shadow-sm border border-primary" style={{ borderRadius: '16px', backgroundColor: '#d0e3faff' }}>
@@ -222,7 +180,6 @@ const Employee = () => {
                   <p className="card-text">Efficiency: {efficiency[selected.toLowerCase()]}</p>
                   <div style={{ height: '150px' }}>
                     <Line data={chartData} options={chartOptions} />
-
                   </div>
                 </div>
               </div>
@@ -275,17 +232,14 @@ const Employee = () => {
         </div>
       </div>
 
-      {/* Calendar Tile Colors */}
-
-
       <style>{`
         .present-day {
-          background-color: #d4edda !important; /* Light green */
+          background-color: #d4edda !important;
           color: #155724 !important;
           border-radius: 6px;
         }
         .absent-day {
-          background-color: #f8d7da !important; /* Light red */
+          background-color: #f8d7da !important;
           color: #721c24 !important;
           border-radius: 6px;
         }

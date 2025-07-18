@@ -1,7 +1,7 @@
 import React from 'react';
 import { FaUserFriends, FaProjectDiagram, FaClock, FaBuilding } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import AdminAnalytics from './components/AdminAnalytics'; // ✅ Importing the graph component
+import AdminAnalytics from './components/AdminAnalytics'; 
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -12,7 +12,6 @@ const AdminDashboard = () => {
       value: '2,500',
       change: 'All active',
       icon: <FaUserFriends />,
-      bg: '#d0e3faff',
       path: 'members',
     },
     {
@@ -20,7 +19,6 @@ const AdminDashboard = () => {
       value: '5',
       change: 'Ongoing & Completed',
       icon: <FaProjectDiagram />,
-      bg: '#d0e3faff',
       path: 'projects',
     },
     {
@@ -28,7 +26,6 @@ const AdminDashboard = () => {
       value: '420',
       change: 'This month',
       icon: <FaClock />,
-      bg: '#d0e3faff',
       path: 'billable-hours',
     },
     {
@@ -36,7 +33,6 @@ const AdminDashboard = () => {
       value: '6',
       change: 'Updated structure',
       icon: <FaBuilding />,
-      bg: '#d0e3faff',
       path: 'departments',
     },
   ];
@@ -50,46 +46,87 @@ const AdminDashboard = () => {
         {cards.map((card, index) => (
           <div className="col-md-3" key={index}>
             <div
-              className="card-box p-4"
-              style={{ background: card.bg, cursor: 'pointer' }}
+              className="card-box"
               onClick={() => navigate(card.path)}
+              style={{ cursor: 'pointer' }}
             >
-              <div className="d-flex justify-content-between align-items-center mb-2">
-                <h6 className="mb-0 text-primary">{card.title}</h6>
-                <span className="fs-5 text-muted">{card.icon}</span>
+              <div className="d-flex justify-content-between align-items-start">
+                <div>
+                  <div className="card-title">{card.title}</div>
+                  <div className="card-value">{card.value}</div>
+                  <div className="card-change">{card.change}</div>
+                </div>
+                <div className="card-icon">{card.icon}</div>
               </div>
-              <h3 className="fw-bold text-dark">{card.value}</h3>
-              <p className="mb-0 text-secondary" style={{ fontSize: '0.9rem' }}>{card.change}</p>
+              <div className="mini-chart" />
             </div>
           </div>
         ))}
       </div>
 
-      {/* Analytics Section Title */}
+      {/* Analytics Section */}
       <div className="mt-5 mb-3">
         <h4 className="fw-semibold text-primary">Analytics Overview</h4>
         <hr className="mb-4" />
       </div>
 
-      {/* 👇 Real Graphs Instead of Placeholders */}
       <AdminAnalytics />
 
-      {/* Styles */}
+      {/* Style Section */}
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
         .dashboard-bg {
-          background: #ebf1f9cd;
+          background: #f0f4f8;
           min-height: 100vh;
+          font-family: 'Poppins', sans-serif;
         }
 
         .card-box {
-          border-radius: 16px;
-          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-          transition: transform 0.3s ease;
+          background: #ffffff;
+          border-radius: 20px;
+          box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+          transition: all 0.3s ease;
+          padding: 20px 24px;
         }
 
         .card-box:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+          transform: translateY(-6px);
+          box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-title {
+          font-size: 0.95rem;
+          font-weight: 500;
+          color: #6c757d;
+        }
+
+        .card-value {
+          font-size: 1.8rem;
+          font-weight: 700;
+          color: #212529;
+          margin-top: 8px;
+        }
+
+        .card-change {
+          font-size: 0.85rem;
+          color: #7c8a9a;
+        }
+
+        .card-icon {
+          font-size: 1.5rem;
+          color: #0d6efd;
+          background: #e7f0ff;
+          border-radius: 50%;
+          padding: 8px;
+        }
+
+        .mini-chart {
+          width: 100%;
+          height: 40px;
+          background: linear-gradient(90deg, #d0e3fa 0%, #c0d4ee 100%);
+          border-radius: 8px;
+          margin-top: 14px;
         }
 
         hr {

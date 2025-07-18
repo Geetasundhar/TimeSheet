@@ -55,11 +55,12 @@ const TLAddMembers = () => {
 >
   {sidebarOpen && <TLsidebar />}
 </div>      
-<div style={{ marginLeft: '40px', padding: '2rem', flex: 1 }}>  <div className="bg-white shadow-sm" style={{ height: '70px', zIndex: 1 }}>
+<div style={{ marginLeft: '0px', padding: '0', flex: 1 }}>  <div className="bg-white shadow-sm" style={{ height: '70px', zIndex: 1 }}>
 <TLtopbar onToggle={() => setSidebarOpen(!sidebarOpen)} />
 
       </div>
-<br></br>
+<br></br>      <div className="container-fluid p-4" style={{ marginTop: '20px' }}>
+
         <h2 className="mb-4">Add Project Members</h2>
 
         <Button variant="success" onClick={() => setShowModal(true)}>
@@ -103,7 +104,7 @@ const TLAddMembers = () => {
           </Modal.Body>
         </Modal>
       </div>
-    </div>
+    </div></div>
   );
 };
 

@@ -1,32 +1,35 @@
-// HRDashboard.jsx
-import React from 'react';
-import { Card, Row, Col, Table } from 'react-bootstrap';
-import './hrdashboard.css';
+import React from "react";
+import { Card, Row, Col, Table } from "react-bootstrap";
+import "./hrdashboard.css";
+
 const HRDashboard = () => {
   return (
-    <div className="container mt-4 hr-dashboard">
-      <h3 className="mb-5 fw-semibold text-center">HR Dashboard</h3>
+    <div className="hr-dashboard-container">
+      <header className="hr-dashboard-header">
+        <h2 className="hr-title">HR Dashboard</h2>
+        <p className="hr-subtitle">Projects and Assignments Overview</p>
+      </header>
 
-      <Row className="mb-5 justify-content-center">
+      <Row className="summary-row">
         <Col md={4}>
-          <Card className="shadow-sm feature-card">
-            <Card.Body className="text-center">
+          <Card className="summary-card">
+            <Card.Body>
               <h5>Total Employees</h5>
               <h3>58</h3>
             </Card.Body>
           </Card>
         </Col>
         <Col md={4}>
-          <Card className="shadow-sm feature-card">
-            <Card.Body className="text-center">
+          <Card className="summary-card">
+            <Card.Body>
               <h5>Active Projects</h5>
               <h3>12</h3>
             </Card.Body>
           </Card>
         </Col>
         <Col md={4}>
-          <Card className="shadow-sm feature-card">
-            <Card.Body className="text-center">
+          <Card className="summary-card">
+            <Card.Body>
               <h5>Team Leads</h5>
               <h3>6</h3>
             </Card.Body>
@@ -34,8 +37,8 @@ const HRDashboard = () => {
         </Col>
       </Row>
 
-      <h5 className="text-center mb-4">Recent Team Assignments</h5>
-      <Table striped bordered hover responsive className="shadow-sm">
+      <h4 className="table-title">Recent Team Assignments</h4>
+      <Table striped bordered hover responsive className="assignment-table">
         <thead>
           <tr>
             <th>Project</th>

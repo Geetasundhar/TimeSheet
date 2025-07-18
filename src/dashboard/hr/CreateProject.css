@@ -1,45 +1,38 @@
-.create-project-container {
-  max-width: 700px;
-  margin: 3rem auto;
+.create-project-wrapper {
+  padding: 40px 20px;
+  background-color: #eef2fc;
+  min-height: 100vh;
+}
+
+.create-project-card {
   background-color: #ffffff;
-  padding: 2rem 2.5rem;
-  border-radius: 10px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  border-left: 5px solid #4b4fbb;
+  border-radius: 12px;
+  padding: 25px;
 }
 
-.create-project-container:hover {
-  transform: translateY(-5px);
-  background-color: #f1f6ff;
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-}
-
-.create-project-container h3 {
-  text-align: center;
-  color: #2c3e50;
+.form-title {
+  color: #4b4fbb;
   font-weight: 600;
 }
 
-.create-project-container .form-label {
+.create-project-card label {
   font-weight: 500;
-  color: #34495e;
+  color: #333;
 }
 
-.create-project-container .form-control {
-  border-radius: 6px;
-  border: 1px solid #ced4da;
+.create-project-card .form-control:focus {
+  border-color: #4b4fbb;
+  box-shadow: 0 0 0 0.2rem rgba(75, 79, 187, 0.25);
 }
 
-.create-project-container .btn-primary {
-  background-color: #5e60ce;
-  border-color: #5e60ce;
+.create-project-card button {
+  background-color: #4b4fbb;
+  border-color: #4b4fbb;
   font-weight: 500;
-  padding: 0.6rem 1.2rem;
-  margin-top: 0.5rem;
-  width: 100%;
 }
 
-.create-project-container .btn-primary:hover {
-  background-color: #4b4fd9;
-  border-color: #4b4fd9;
+.create-project-card button:hover {
+  background-color: #3a3ea5;
+  border-color: #3a3ea5;
 }

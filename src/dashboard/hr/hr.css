@@ -1,32 +1,32 @@
-.hr-layout {
-  height: 100vh;
-  background-color: #f5f7ff;
+.hr-layout-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f5f9ff;
 }
 
-.hr-sidebar {
-  width: 220px;
-  background: linear-gradient(to bottom, #4c4cff, #7373ff);
-  color: white;
-  height: 100vh;
+/* Main content shifts right when sidebar is visible */
+.hr-main-content.with-sidebar {
+  margin-left: 240px; /* sidebar width */
 }
 
-.hr-sidebar h5 {
+.hr-main-content {
+  width: 100%;
+  transition: margin-left 0.3s ease;
+}
+
+.hamburger-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.hr-title {
+  font-size: 22px;
   font-weight: 600;
+  color: #213555;
 }
 
-.hr-sidebar .nav-link {
-  color: white;
-  margin-bottom: 10px;
-}
-
-.hr-sidebar .nav-link.active {
-  background-color: #ffffff33;
-  border-radius: 6px;
-}
-
-.hr-main {
-  flex: 1;
-  overflow-y: auto;
-  background-color: #ffffff;
-  border-left: 1px solid #e0e0e0;
+.hamburger-btn:hover {
+  color: #4b4fbb;
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import AdminLayout from './admin/AdminLayout'; 
-import AdminDashboard from './admin/AdminDashboard';
+import AdminDashboard from './admin/Admindashboard';
 import AddMember from './admin/AddMember';
 import Members from './admin/Members';
 import Department from './admin/Department'; 

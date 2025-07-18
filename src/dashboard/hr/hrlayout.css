@@ -1,0 +1,35 @@
+.hamburger-btn {
+  width: 44px;
+  height: 40px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  border: none;
+  border-radius: 8px;
+  background: #ffffff; /* Bluish-purple gradient */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.hamburger-btn:hover {
+  transform: scale(1.05);
+  background: #ffffff;
+}
+
+.hamburger-line {
+  width: 22px;
+  height: 3px;
+  background-color: #ffffff;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.hr-main-content {
+  margin-left: 240px; /* Push content to the right of sidebar */
+  padding: 30px;
+  background-color: #f5f9ff;
+  min-height: 100vh;
+}

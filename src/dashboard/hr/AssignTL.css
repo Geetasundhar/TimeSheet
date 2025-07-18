@@ -1,41 +1,38 @@
-/* AssignTL.css */
+.assign-tl-wrapper {
+  padding: 40px 20px;
+  background-color: #eef2fc;
+  min-height: 100vh;
+}
 
-.assign-tl-container {
-  background: linear-gradient(to right, #eef2ff, #f5f7ff);
-  padding: 2rem;
+.assign-tl-card {
+  background-color: #ffffff;
+  border-left: 5px solid #4b4fbb;
   border-radius: 12px;
-  max-width: 600px;
-  margin: 2rem auto;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  padding: 25px;
 }
 
-.assign-tl-container:hover {
-  transform: scale(1.01);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+.form-title {
+  color: #4b4fbb;
+  font-weight: 600;
 }
 
-.assign-tl-container h3 {
-  text-align: center;
-  color: #2e3a59;
-  margin-bottom: 1.5rem;
-}
-
-.assign-tl-container .form-control {
-  border-radius: 6px;
-  padding: 0.75rem;
-  border: 1px solid #ccc;
-}
-
-.assign-tl-container .btn-success {
-  width: 100%;
-  padding: 0.75rem;
+.assign-tl-card label {
   font-weight: 500;
-  background-color: #6c63ff;
-  border: none;
-  transition: background-color 0.3s ease;
+  color: #333;
 }
 
-.assign-tl-container .btn-success:hover {
-  background-color: #5848e6;
+.assign-tl-card .form-control:focus {
+  border-color: #4b4fbb;
+  box-shadow: 0 0 0 0.2rem rgba(75, 79, 187, 0.25);
+}
+
+.assign-tl-card button {
+  background-color: #4b4fbb;
+  border-color: #4b4fbb;
+  font-weight: 500;
+}
+
+.assign-tl-card button:hover {
+  background-color: #3a3ea5;
+  border-color: #3a3ea5;
 }

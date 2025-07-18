@@ -1,36 +1,35 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
+
 import Home from './pages/Home';
+import AdminDashboard from './dashboard/admin/Admindashboard';
+import NotFound from './pages/NotFound';
 import Login from './components/Login';
-<<<<<<< HEAD
+import Employee from './dashboard/Employee';
 import DashboardRouter from './dashboard/DashboardRouter';
-import NotFound from './pages/NotFound';
-import Employee from './dashboard/Employee';
-=======
-import AdminDashboard from './dashboard/admin/AdminDashboard';
-import Employee from './dashboard/Employee';
-import NotFound from './pages/NotFound';
->>>>>>> 1e70f60f35e8f5f1b7c8449ca795766801b0d118
+import { CEORoutes } from './ceo/routes';
 
 const AppRoutes = () => {
   return (
     <Routes>
+      {/* Home and Auth */}
       <Route path="/" element={<Home />} />
-<<<<<<< HEAD
-      <Route path="/employee" element={<Employee />} />
-      <Route path="/user-login" element={<Login />} />
-      <Route path="/dashboard/*" element={<DashboardRouter />} /> 
-=======
       <Route path="/login" element={<Login />} />
+      <Route path="/user-login" element={<Login />} />
 
-      {/* Admin Route */}
+      {/* Admin Routes */}
       <Route path="/admin" element={<AdminDashboard />} />
 
-      {/* Employee Dashboard Route */}
+      {/* Employee Routes */}
       <Route path="/employee" element={<Employee />} />
 
-      {/* Catch-all route for 404 */}
->>>>>>> 1e70f60f35e8f5f1b7c8449ca795766801b0d118
+      {/* Dashboard Router */}
+      <Route path="/dashboard/*" element={<DashboardRouter />} />
+
+      {/* CEO Routes */}
+      {CEORoutes}
+
+      {/* 404 Not Found */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

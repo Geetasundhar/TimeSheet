@@ -522,7 +522,7 @@ XLSX.writeFile(wb, `Timesheet_${selectedEmployee}_${year}_${month + 1}.xlsx`);
 
     {/* MAIN AREA */}
     <div className="flex-grow-1 bg-light">
-      {/* TOPBAR */} <div style={{ marginLeft: '40px', padding: '2rem', flex: 1 }}>
+      {/* TOPBAR */} <div style={{ marginLeft: '0px', padding: '0', flex: 1 }}>
       <div className="bg-white shadow-sm" style={{ height: '70px', zIndex: 1 }}>
 <TLtopbar onToggle={() => setSidebarOpen(!sidebarOpen)} />
 

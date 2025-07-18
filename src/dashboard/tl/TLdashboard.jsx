@@ -34,13 +34,14 @@ const TLdashboard = () => {
 <div
   className="flex-grow-1"
   style={{
-    marginLeft: sidebarVisible && window.innerWidth >= 992 ? '260px' : '0',
-    padding: '1rem',
+    marginLeft: sidebarVisible && window.innerWidth >= 992 ? '220px' : '0',
+    padding: 0,
     transition: 'margin-left 0.3s ease',
   }}
 >
         <TLtopbar onToggle={() => setSidebarVisible(!sidebarVisible)} /> {/* 🔹 Toggle callback */}
-<br></br>
+<br></br>      <div className="container-fluid p-4" style={{ marginTop: '20px' }}>
+
         <h2 className="fw-bold mb-4">Welcome, Team Leader</h2>
 
         {/* Tabs */}
@@ -157,7 +158,7 @@ const TLdashboard = () => {
           }
         `}</style>
       </div>
-    </div>
+    </div></div>
   );
 };
 

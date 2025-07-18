@@ -37,6 +37,13 @@ import CompanyOverview from './dashboard/hr/CompanyOverview';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
+//TL
+import TLdashboard from './dashboard/tl/TLdashboard';
+import TLEditTimesheet from './dashboard/tl/TLEditTimesheet';
+import TLAddMembers from './dashboard/tl/TLAddMembers'
+import TLsidebar from './dashboard/tl/TLsidebar';
+import TLtopbar from './dashboard/tl/TLtopbar';
+
 
 const App = () => {
   return (
@@ -87,6 +94,15 @@ const App = () => {
           <Route path="employee-logs" element={<EmployeeLogs />} />
 
         </Route>
+
+        {/*team lead route */}
+        {/* TL Routes */}
+      
+      <Route>
+        <Route path="/tl/dashboard" element={<TLdashboard />} />
+        <Route path="/tl/edit-timesheet" element={<TLEditTimesheet />} />
+        <Route path="/tl/add-members" element={<TLAddMembers />} />
+      </Route>
 
         {/* Fallback Route */}
         <Route path="*" element={<NotFound />} />

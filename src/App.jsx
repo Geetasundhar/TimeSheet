@@ -15,6 +15,9 @@ import Department from './dashboard/admin/Department';
 import TotalProject from './dashboard/admin/TotalProject';
 import BillableHours from './dashboard/admin/BillableHours';
 
+// Employee
+import Employee from './dashboard/Employee';
+
 // CEO
 import CEOLayout from './dashboard/ceo/CEOLayout';
 import CEODashboard from './dashboard/ceo/pages/CEODashboard';
@@ -29,6 +32,7 @@ import HRDashboard from './dashboard/hr/HRDashboard';
 import CreateProject from './dashboard/hr/CreateProject';
 import AssignTL from './dashboard/hr/AssignTL';
 import CompanyOverview from './dashboard/hr/CompanyOverview';
+
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
@@ -55,6 +59,9 @@ const App = () => {
           <Route path="billable-hours" element={<BillableHours />} />
         </Route>
 
+        {/* Employee Route */}
+        <Route path="/dashboard/employee" element={<Employee />} />
+
         {/* CEO Routes */}
         <Route path="/ceo" element={<CEOLayout />}>
           <Route index element={<CEODashboard />} />
@@ -72,6 +79,13 @@ const App = () => {
           <Route path="create-project" element={<CreateProject />} />
           <Route path="assign-tl" element={<AssignTL />} />
           <Route path="company-overview" element={<CompanyOverview />} />
+
+          {/* ✅ CEO content rendered inside HR layout */}
+          <Route path="analytics" element={<Analytics />} />
+          <Route path="team-reports" element={<TeamReports />} />
+          <Route path="all-entries" element={<AllEntries />} />
+          <Route path="employee-logs" element={<EmployeeLogs />} />
+
         </Route>
 
         {/* Fallback Route */}

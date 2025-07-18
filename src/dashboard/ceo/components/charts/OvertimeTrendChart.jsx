@@ -18,19 +18,21 @@ const data = [
 
 const OvertimeTrendChart = () => (
   <div style={{ height: 300 }}>
-    <ResponsiveContainer width="100%" height="100%">
+    <ResponsiveContainer width="100%" height="100%" debounce={1}>
       <LineChart data={data}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="week" />
         <YAxis />
         <Tooltip />
         <Line
-          type="monotone"
-          dataKey="hours"
-          stroke="#007bff"
-          strokeWidth={3}
-          dot={{ r: 5 }}
-        />
+  type="monotone"
+  dataKey="hours"
+  stroke="#007bff"
+  strokeWidth={3}
+  dot={{ r: 5 }}
+  isAnimationActive={false}
+/>
+
       </LineChart>
     </ResponsiveContainer>
   </div>

@@ -9,12 +9,12 @@ const data = [
 
 const EmployeeTimeline = () => (
   <div style={{ height: 300 }}>
-    <ResponsiveContainer width="100%" height="100%">
+    <ResponsiveContainer width="100%" height="100%" debounce={1}>
       <BarChart data={data}>
         <XAxis dataKey="name" />
         <YAxis />
-        <Tooltip />
-        <Bar dataKey="hours" fill="#0d6efd" />
+        <Tooltip />  
+        <Bar dataKey="hours" fill="#0d6efd" isAnimationActive={false} />
       </BarChart>
     </ResponsiveContainer>
   </div>

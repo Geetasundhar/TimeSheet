@@ -13,18 +13,20 @@ const COLORS = ["#0d6efd", "#1e3a8a", "#007bff", "#3399ff"];
 
 const ProjectAllocationChart = () => (
   <div style={{ height: 300 }}>
-    <ResponsiveContainer width="100%" height="100%">
+    <ResponsiveContainer width="100%" height="100%" debounce={1}>
       <PieChart>
         <Pie
-          data={data}
-          cx="50%"
-          cy="50%"
-          labelLine={false}
-          outerRadius={100}
-          fill="#0d6efd"
-          dataKey="value"
-          label={({ name }) => name}
-        >
+  data={data}
+  cx="50%"
+  cy="50%"
+  labelLine={false}
+  outerRadius={100}
+  fill="#0d6efd"
+  dataKey="value"
+  label={({ name }) => name}
+  isAnimationActive={false} // ✅ Add this
+>
+
           {data.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
           ))}

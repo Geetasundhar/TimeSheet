@@ -6,14 +6,13 @@ import OvertimeTrendChart from "../components/charts/OvertimeTrendChart";
 import BillableHoursChart from "../components/charts/BillableHoursChart";
 import EmployeeTimeline from "../components/charts/EmployeeTimeline";
 
-
 const Analytics = () => {
   const [month, setMonth] = useState("July");
   const [department, setDepartment] = useState("All");
 
   return (
     <div style={{ padding: "20px", background: "#e7f1ff", minHeight: "100vh" }}>
-      {/* Header Section */}
+      {/* Header */}
       <div style={headerStyle}>
         <div>
           <h2 style={titleStyle}>Analytics Overview</h2>
@@ -39,14 +38,13 @@ const Analytics = () => {
         </select>
       </div>
 
-      {/* Charts Section */}
+      {/* Charts */}
       <div style={chartGridStyle}>
-        <div style={chartCardStyle}><DepartmentHoursChart /></div>
-        <div style={chartCardStyle}><ProjectAllocationChart /></div>
-        <div style={chartCardStyle}><OvertimeTrendChart /></div>
-        <div style={chartCardStyle}><BillableHoursChart /></div>
-<div style={chartCardStyle}><EmployeeTimeline /></div>
-
+        <div style={chartCardStyle}><DepartmentHoursChart month={month} department={department} /></div>
+        <div style={chartCardStyle}><ProjectAllocationChart month={month} department={department} /></div>
+        <div style={chartCardStyle}><OvertimeTrendChart month={month} department={department} /></div>
+        <div style={chartCardStyle}><BillableHoursChart month={month} department={department} /></div>
+        <div style={fullWidthChartStyle}><EmployeeTimeline month={month} department={department} /></div>
       </div>
     </div>
   );
@@ -54,7 +52,7 @@ const Analytics = () => {
 
 // 🎨 Styles
 const titleStyle = {
-  color: "#0d6efd", // Blue theme
+  color: "#0d6efd",
   fontSize: "28px",
   fontWeight: "600",
 };
@@ -96,6 +94,16 @@ const chartCardStyle = {
   padding: "20px",
   boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
   minWidth: "300px",
+  minHeight: "350px", // Fix for chart stability
+};
+
+const fullWidthChartStyle = {
+  flex: "1 1 100%",
+  background: "#ffffff",
+  borderRadius: "12px",
+  padding: "20px",
+  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
+  minHeight: "400px",
 };
 
 export default Analytics;

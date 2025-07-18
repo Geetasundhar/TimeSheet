@@ -4,7 +4,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FaRegStickyNote } from 'react-icons/fa';
-import './TimesheetCalendar.css';
 import * as XLSX from 'xlsx';
 import { Bar, Pie } from 'react-chartjs-2';
 import {

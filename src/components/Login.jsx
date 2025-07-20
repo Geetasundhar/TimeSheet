@@ -7,25 +7,58 @@ import {
   Button,
   Box,
 } from '@mui/material';
-import { Link } from 'react-router-dom';
+
+import { Link, useNavigate } from 'react-router-dom';
 import HomeIcon from '@mui/icons-material/Home';
-import './Login.css'; // Include keyframes for background animation
+import './Login.css'; 
+
+import { users } from '../data/users'; 
 
 const Login = () => {
+  const navigate = useNavigate();
   const [showForgot, setShowForgot] = useState(false);
+  const [formData, setFormData] = useState({ id: '', password: '' });
   const [email, setEmail] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
 
-  const handleLoginSubmit = (e) => {
+  const handleChange = (e) => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleLogin = (e) => {
     e.preventDefault();
-    console.log('Login with', username, password);
+
+    const user = users.find(
+      u => u.empId === formData.id && u.password === formData.password
+    );
+
+    if (user) {
+      localStorage.setItem('employeeId', user.empId);
+      localStorage.setItem('employeeName', user.name || 'Employee');
+      localStorage.setItem('employeePhoto', user.photo || '');
+      switch (user.role) {
+        case 'admin':
+          navigate('/dashboard/admin');
+          break;
+        case 'hr':
+          navigate('/hr');
+          break;
+        case 'teamlead':
+          navigate('/tl/dashboard');
+          break;
+        case 'employee':
+          navigate('/dashboard/Employee');
+          break;
+        default:
+          alert('Unknown role');
+      }
+    } else {
+      alert('Invalid Employee ID or Password');
+    }
   };
 
   const handleForgotSubmit = (e) => {
     e.preventDefault();
-    console.log('Forgot Password Email:', email);
-    alert('Verification code sent to your email!');
+    alert(`Verification code sent to ${email}`);
   };
 
   return (
@@ -50,30 +83,32 @@ const Login = () => {
             </Typography>
 
             {!showForgot ? (
-              <form onSubmit={handleLoginSubmit}>
+              <form onSubmit={handleLogin}>
                 <TextField
-                  label="Username"
+                  label="Employee ID"
+                  name="id"
                   variant="outlined"
                   fullWidth
                   margin="normal"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  value={formData.id}
+                  onChange={handleChange}
                 />
                 <TextField
                   label="Password"
+                  name="password"
                   type="password"
                   variant="outlined"
                   fullWidth
                   margin="normal"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={formData.password}
+                  onChange={handleChange}
                 />
                 <Button
+                  type="submit"
                   variant="contained"
                   color="primary"
                   fullWidth
                   style={{ marginTop: '16px' }}
-                  type="submit"
                 >
                   Login
                 </Button>
@@ -96,7 +131,6 @@ const Login = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
-                {/* Add reCAPTCHA below if needed */}
                 <Button
                   variant="contained"
                   color="secondary"

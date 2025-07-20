@@ -1,5 +1,4 @@
-// Keep all your imports
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Calendar from 'react-calendar';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -34,20 +33,6 @@ const Employee = () => {
   const [showEditForm, setShowEditForm] = useState(false);
   const [editedName, setEditedName] = useState(employeeName || '');
   const [editedPhoto, setEditedPhoto] = useState(employeePhoto || '');
-
-  // Efficiency record states
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [timesheetDataMap, setTimesheetDataMap] = useState(() => {
-    const saved = localStorage.getItem(`timesheetDataMap_${employeeId}`);
-    return saved ? JSON.parse(saved) : {};
-  });
-
-  const handleEfficiencyClick = (level) => {
-    if (!selectedDate) return;
-    const newMap = { ...timesheetDataMap, [formatDate(selectedDate)]: level };
-    setTimesheetDataMap(newMap);
-    localStorage.setItem(`timesheetDataMap_${employeeId}`, JSON.stringify(newMap));
-  };
 
   const efficiency = {
     daily: '80%',
@@ -151,7 +136,9 @@ const Employee = () => {
               />
               <div>
                 <p className="mb-0 fw-bold">{employeeName || 'Employee'}</p>
-                <p className="mb-0 text-white-50" style={{ fontSize: '13px' }}>{employeeId || 'ID not available'}</p>
+                <p className="mb-0 text-white-50" style={{ fontSize: '13px' }}>
+                  {employeeId || 'ID not available'}
+                </p>
               </div>
             </div>
             <hr className="border-light" />
@@ -209,20 +196,24 @@ const Employee = () => {
             />
             {profileMenuOpen && (
               <div className="position-absolute end-0 mt-2 p-2 bg-white border rounded shadow" style={{ minWidth: '160px' }}>
-                <button className="dropdown-item mb-1" onClick={handleEditProfile}>Edit Profile</button>
-                <button className="dropdown-item" onClick={handleLogout}>Logout</button>
+                <button className="dropdown-item mb-1" onClick={handleEditProfile}>
+                  Edit Profile
+                </button>
+                <button className="dropdown-item" onClick={handleLogout}>
+                  Logout
+                </button>
               </div>
             )}
           </div>
         </div>
 
         <div className="p-3" ref={dashboardRef}>
-          {/* Efficiency Cards */}
-          <div className="row g-4 row-cols-1 row-cols-sm-2 row-cols-md-4 mb-4">
+          {/* Four Cards in Single Row */}
+          <div className="row g-4 row-cols-1 row-cols-sm-2 row-cols-md-4 row-cols-lg-4 mb-4">
             {filteredLabels.map((item, index) => (
               <div key={index} className="col">
                 <div
-                  className="card shadow-sm h-100 p-3"
+                  className="card shadow-sm h-100 p-3 d-flex flex-column justify-content-between"
                   onClick={() => handleCardClick(item.label)}
                   style={{ borderRadius: '16px', cursor: 'pointer', backgroundColor: '#ffffff' }}
                 >
@@ -230,13 +221,12 @@ const Employee = () => {
                     <img src={cardIcons[index % cardIcons.length]} alt="icon" style={{ width: '30px', marginRight: '10px' }} />
                     <h6 className="text-muted mb-0">{item.label}</h6>
                   </div>
-                  <div className="fs-4 fw-bold text-primary">{item.value}</div>
+                  <div className="fs-4 fw-bold text-primary">{item.value || 'Not updated'}</div>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Chart */}
           {selected && (
             <div className="mb-4 p-3 shadow-sm rounded" style={{ backgroundColor: '#ffffff' }}>
               <h5 className="text-primary mb-3">{selected} Efficiency Record</h5>
@@ -246,13 +236,12 @@ const Employee = () => {
             </div>
           )}
 
-          {/* Attendance Summary */}
           <div className="row g-4 row-cols-1 row-cols-md-2 mb-4">
             <div className="col">
               <div className="card text-center shadow-sm" style={{ backgroundColor: '#e9f9ef', border: '1px solid #c5f0d2', color: '#198754', borderRadius: '16px' }}>
                 <div className="card-body">
                   <h5 className="mb-2">Present Percentage</h5>
-                  <p className="fs-3 mb-0">{presentPercent}</p>
+                  <p className="fs-3 mb-0">{presentPercent || 'Not updated'}</p>
                 </div>
               </div>
             </div>
@@ -260,62 +249,68 @@ const Employee = () => {
               <div className="card text-center shadow-sm" style={{ backgroundColor: '#ffecec', border: '1px solid #f1c2c2', color: '#dc3545', borderRadius: '16px' }}>
                 <div className="card-body">
                   <h5 className="mb-2">Absent Percentage</h5>
-                  <p className="fs-3 mb-0">{absentPercent}</p>
+                  <p className="fs-3 mb-0">{absentPercent || 'Not updated'}</p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Calendar and Efficiency Picker */}
           <div className="p-4 rounded shadow-sm mb-4" style={{ backgroundColor: '#d0e3faff' }}>
             <h5 className="text-primary mb-3">Attendance Calendar</h5>
             <Calendar
               value={calendarDate}
-              onChange={(date) => {
-                setCalendarDate(date);
-                setSelectedDate(date);
-              }}
+              onChange={setCalendarDate}
               tileClassName={({ date }) => {
                 const formatted = formatDate(date);
-                const level = timesheetDataMap[formatted];
-                if (level === 'high') return 'present-day';
-                if (level === 'medium') return 'second-saturday';
-                if (level === 'low') return 'absent-day';
+                if (presentDates.includes(formatted)) return 'present-day';
+                if (absentDates.includes(formatted)) return 'absent-day';
+
+                const isSaturday = date.getDay() === 6;
+                const month = date.getMonth();
+                const year = date.getFullYear();
+                let count = 0;
+                for (let d = 1; d <= date.getDate(); d++) {
+                  const temp = new Date(year, month, d);
+                  if (temp.getDay() === 6) count++;
+                }
+                if (isSaturday && count === 2) return 'second-saturday';
                 return null;
               }}
               className="w-100 border-0"
             />
-            {selectedDate && (
-              <div className="mt-3 text-center">
-                <p>Selected Date: <strong>{formatDate(selectedDate)}</strong></p>
-                <div className="btn-group">
-                  <button className="btn btn-success" onClick={() => handleEfficiencyClick('high')}>High</button>
-                  <button className="btn btn-warning" onClick={() => handleEfficiencyClick('medium')}>Medium</button>
-                  <button className="btn btn-danger" onClick={() => handleEfficiencyClick('low')}>Low</button>
-                </div>
-              </div>
-            )}
           </div>
 
-          {/* Profile Edit Form */}
           {showEditForm && (
             <div className="p-4 mb-4 rounded shadow-sm bg-white">
               <h5 className="text-primary mb-3">Edit Profile</h5>
               <div className="mb-3">
                 <label className="form-label">Name</label>
-                <input type="text" className="form-control" value={editedName} onChange={(e) => setEditedName(e.target.value)} />
+                <input
+                  type="text"
+                  className="form-control"
+                  value={editedName}
+                  onChange={(e) => setEditedName(e.target.value)}
+                />
               </div>
               <div className="mb-3">
                 <label className="form-label">Photo URL</label>
-                <input type="text" className="form-control" value={editedPhoto} onChange={(e) => setEditedPhoto(e.target.value)} />
+                <input
+                  type="text"
+                  className="form-control"
+                  value={editedPhoto}
+                  onChange={(e) => setEditedPhoto(e.target.value)}
+                />
               </div>
-              <button className="btn btn-primary me-2" onClick={handleSaveProfile}>Save</button>
-              <button className="btn btn-secondary" onClick={() => setShowEditForm(false)}>Cancel</button>
+              <button className="btn btn-primary me-2" onClick={handleSaveProfile}>
+                Save
+              </button>
+              <button className="btn btn-secondary" onClick={() => setShowEditForm(false)}>
+                Cancel
+              </button>
             </div>
           )}
         </div>
 
-        {/* Efficiency Calendar Styling */}
         <style>{`
           .present-day {
             background-color: #28a745 !important;
@@ -330,7 +325,6 @@ const Employee = () => {
           .second-saturday {
             background-color: #ffc107 !important;
             color: black !important;
-            border-radius: 6px;
           }
         `}</style>
       </div>

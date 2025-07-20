@@ -86,6 +86,8 @@ const App = () => {
           <Route path="assign-tl" element={<AssignTL />} />
           <Route path="company-overview" element={<CompanyOverview />} />
         </Route>
+
+        {/*team lead route */}
         {/* TL Routes */}
  <Route>
         <Route path="/tl/dashboard" element={<TLdashboard />} />

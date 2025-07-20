@@ -13,6 +13,8 @@ import {
 import * as XLSX from 'xlsx';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
 
@@ -46,6 +48,8 @@ const ReadOnlyTimesheet = () => {
   const [data, setData] = useState([]);
   const [projectName, setProjectName] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editForm, setEditForm] = useState({ name: '', email: '' });
 
   const employeeId = localStorage.getItem('employeeId');
   const employeeName = localStorage.getItem('employeeName');
@@ -57,6 +61,7 @@ const ReadOnlyTimesheet = () => {
         .then(res => res.json())
         .then(data => {
           setProjectName(data.project || 'N/A');
+          setEditForm({ name: data.name, email: data.email });
         })
         .catch(err => {
           console.error('Failed to fetch project:', err);
@@ -188,15 +193,19 @@ const ReadOnlyTimesheet = () => {
       <div className="flex-grow-1" style={{ marginLeft: sidebarOpen ? '250px' : '0', transition: 'margin-left 0.3s' }}>
         <div className="d-flex justify-content-between align-items-center px-4 py-2 shadow-sm bg-white sticky-top">
           <button className="btn btn-outline-primary" onClick={() => setSidebarOpen(!sidebarOpen)}><i className="bi bi-list"></i></button>
-          <div className="d-flex align-items-center">
-            <span className="me-3 fw-bold text-primary">{employeeName}</span>
-            <img src={employeePhoto || 'https://cdn-icons-png.flaticon.com/512/194/194938.png'} alt="Profile" className="rounded-circle" style={{ width: '35px', height: '35px', objectFit: 'cover' }} />
+          <div className="dropdown">
+            <img src='https://cdn-icons-png.flaticon.com/512/194/194938.png' className="rounded-circle dropdown-toggle" role="button" data-bs-toggle="dropdown" style={{ width: '40px', height: '40px', cursor: 'pointer' }} alt="user" />
+            <ul className="dropdown-menu dropdown-menu-end">
+              <li><button className="dropdown-item" onClick={() => setShowEditModal(true)}>Edit Profile</button></li>
+              <li><a className="dropdown-item text-danger" href="/">Logout</a></li>
+            </ul>
           </div>
         </div>
 
         <div className="container-fluid p-4">
           <h2 className="mb-4">Efficiency Sheet</h2>
 
+          {/* Month/Year Selection */}
           <div className="d-flex flex-wrap gap-3 mb-4 align-items-center">
             <select className="form-select w-auto" value={month} onChange={e => setMonth(Number(e.target.value))}>
               {months.map((m, i) => <option key={i} value={i}>{m}</option>)}
@@ -211,6 +220,7 @@ const ReadOnlyTimesheet = () => {
             </div>
           </div>
 
+          {/* Week Selection */}
           <div className="row mb-3">
             {weeks.map((wk, idx) => {
               const valid = wk.filter(d => d && d.getMonth() === month);
@@ -226,6 +236,7 @@ const ReadOnlyTimesheet = () => {
             })}
           </div>
 
+          {/* Timesheet Table */}
           {selectedWeekIdx !== null && data.length > 0 && (
             <>
               <div className="table-responsive">
@@ -267,16 +278,31 @@ const ReadOnlyTimesheet = () => {
                 </div>
               </div>
 
-              <div className="card mt-4">
-                <div className="card-body">
-                  <h5 className="card-title">Pie Chart: Status Breakdown</h5>
-                  <Pie data={pieChartData} />
-                </div>
-              </div>
+              
             </>
           )}
         </div>
       </div>
+
+      {/* Edit Profile Modal */}
+      <Modal show={showEditModal} onHide={() => setShowEditModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Profile</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <label>Name</label>
+          <input type="text" className="form-control mb-3" value={editForm.name} onChange={e => setEditForm({ ...editForm, name: e.target.value })} />
+          <label>Email</label>
+          <input type="email" className="form-control" value={editForm.email} onChange={e => setEditForm({ ...editForm, email: e.target.value })} />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowEditModal(false)}>Close</Button>
+          <Button variant="primary" onClick={() => {
+            alert('Profile updated!');
+            setShowEditModal(false);
+          }}>Save</Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

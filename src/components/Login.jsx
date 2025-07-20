@@ -48,6 +48,9 @@ const Login = () => {
         case 'employee':
           navigate('/dashboard/Employee');
           break;
+        case 'ceo':
+          navigate('/ceo');
+          break;
         default:
           alert('Unknown role');
       }

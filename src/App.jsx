@@ -17,7 +17,7 @@ import BillableHours from './dashboard/admin/BillableHours';
 
 // Employee
 import Employee from './dashboard/Employee';
-
+import EmployeeReports from './dashboard/EmployeeReports';
 // CEO
 import CEOLayout from './dashboard/ceo/CEOLayout';
 import CEODashboard from './dashboard/ceo/pages/CEODashboard';
@@ -66,6 +66,7 @@ const App = () => {
 
         {/* Employee Route */}
         <Route path="/dashboard/employee" element={<Employee />} />
+        <Route path="/employee/reports" element={<EmployeeReports />} />
 
         {/* CEO Routes */}
         <Route path="/ceo" element={<CEOLayout />}>

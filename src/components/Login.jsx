@@ -1,96 +1,127 @@
 import React, { useState } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap-icons/font/bootstrap-icons.css';
+import {
+  Card,
+  CardContent,
+  Typography,
+  TextField,
+  Button,
+  Box,
+} from '@mui/material';
+import { Link } from 'react-router-dom';
+import HomeIcon from '@mui/icons-material/Home';
+import './Login.css'; // Include keyframes for background animation
 
 const Login = () => {
-  const [id, setId] = useState('');
-  const [password, setPassword] = useState('');
   const [showForgot, setShowForgot] = useState(false);
   const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    alert(`Logging in with ID: ${id}`);
+  const handleLoginSubmit = (e) => {
+    e.preventDefault();
+    console.log('Login with', username, password);
   };
 
-  const handleForgotSubmit = () => {
-    alert(`Password reset link sent to ${email}`);
-    setEmail('');
-    setShowForgot(false);
+  const handleForgotSubmit = (e) => {
+    e.preventDefault();
+    console.log('Forgot Password Email:', email);
+    alert('Verification code sent to your email!');
   };
 
   return (
     <div style={styles.wrapper}>
       <div style={styles.animatedBackground}></div>
 
-      {/* Home Icon */}
-      <a href="/" style={styles.homeIcon}>
-        <i className="bi bi-house-fill" style={{ fontSize: '24px', color: 'dark grey' }}></i>
-      </a>
+      <Link to="/" style={styles.homeIcon}>
+        <HomeIcon fontSize="large" />
+      </Link>
 
-      <div className="container d-flex justify-content-center align-items-center vh-100">
-        <div className="card p-4 shadow-lg" style={styles.card}>
-          <h2 className="text-center mb-4">Login</h2>
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100vh"
+        zIndex={1}
+      >
+        <Card style={styles.card}>
+          <CardContent>
+            <Typography variant="h5" gutterBottom>
+              {showForgot ? 'Forgot Password' : 'Login'}
+            </Typography>
 
-          {!showForgot ? (
-            <>
-              <div className="mb-3">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Enter ID"
-                  value={id}
-                  onChange={(e) => setId(e.target.value)}
+            {!showForgot ? (
+              <form onSubmit={handleLoginSubmit}>
+                <TextField
+                  label="Username"
+                  variant="outlined"
+                  fullWidth
+                  margin="normal"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                 />
-              </div>
-
-              <div className="mb-3">
-                <input
+                <TextField
+                  label="Password"
                   type="password"
-                  className="form-control"
-                  placeholder="Enter Password"
+                  variant="outlined"
+                  fullWidth
+                  margin="normal"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
-              </div>
-
-              <button className="btn btn-primary w-100 mb-2" onClick={handleLogin}>
-                Login
-              </button>
-
-              <p
-                className="text-primary text-decoration-underline text-center"
-                style={{ cursor: 'pointer' }}
-                onClick={() => setShowForgot(true)}
-              >
-                Forgot Password?
-              </p>
-            </>
-          ) : (
-            <>
-              <h5 className="text-center">Reset Password</h5>
-              <div className="mb-3">
-                <input
-                  type="email"
-                  className="form-control"
-                  placeholder="Enter your email"
+                <Button
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  style={{ marginTop: '16px' }}
+                  type="submit"
+                >
+                  Login
+                </Button>
+                <Typography
+                  variant="body2"
+                  align="right"
+                  style={{ marginTop: '10px', cursor: 'pointer', color: '#1976d2' }}
+                  onClick={() => setShowForgot(true)}
+                >
+                  Forgot Password?
+                </Typography>
+              </form>
+            ) : (
+              <form onSubmit={handleForgotSubmit}>
+                <TextField
+                  label="Email"
+                  variant="outlined"
+                  fullWidth
+                  margin="normal"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
-              </div>
-              <button className="btn btn-primary w-100 mb-2" onClick={handleForgotSubmit}>
-                Send Reset Link
-              </button>
-              <button className="btn btn-secondary w-100" onClick={() => setShowForgot(false)}>
-                Back to Login
-              </button>
-            </>
-          )}
-        </div>
-      </div>
+                {/* Add reCAPTCHA below if needed */}
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  fullWidth
+                  style={{ marginTop: '16px' }}
+                  type="submit"
+                >
+                  Send Code
+                </Button>
+                <Typography
+                  variant="body2"
+                  align="left"
+                  style={{ marginTop: '10px', cursor: 'pointer', color: '#1976d2' }}
+                  onClick={() => setShowForgot(false)}
+                >
+                  ← Back to Login
+                </Typography>
+              </form>
+            )}
+          </CardContent>
+        </Card>
+      </Box>
     </div>
   );
 };
-
 
 const styles = {
   wrapper: {
@@ -108,30 +139,22 @@ const styles = {
     backgroundSize: '400% 400%',
     animation: 'gradientAnimation 15s ease infinite',
     zIndex: -1,
+    pointerEvents: 'none',
   },
   homeIcon: {
     position: 'absolute',
     top: '20px',
     left: '20px',
-    zIndex: 10,
+    zIndex: 2,
     textDecoration: 'none',
+    color: '#000',
   },
   card: {
     maxWidth: '400px',
     width: '100%',
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    zIndex: 1,
+    zIndex: 2,
   },
 };
-
-
-const styleSheet = document.createElement('style');
-styleSheet.innerHTML = `
-@keyframes gradientAnimation {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}`;
-document.head.appendChild(styleSheet);
 
 export default Login;

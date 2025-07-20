@@ -1,4 +1,5 @@
-import React, { useState, useRef } from 'react';
+// Keep all your imports
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Calendar from 'react-calendar';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -29,6 +30,24 @@ const Employee = () => {
   const [selected, setSelected] = useState(null);
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [editedName, setEditedName] = useState(employeeName || '');
+  const [editedPhoto, setEditedPhoto] = useState(employeePhoto || '');
+
+  // Efficiency record states
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [timesheetDataMap, setTimesheetDataMap] = useState(() => {
+    const saved = localStorage.getItem(`timesheetDataMap_${employeeId}`);
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  const handleEfficiencyClick = (level) => {
+    if (!selectedDate) return;
+    const newMap = { ...timesheetDataMap, [formatDate(selectedDate)]: level };
+    setTimesheetDataMap(newMap);
+    localStorage.setItem(`timesheetDataMap_${employeeId}`, JSON.stringify(newMap));
+  };
 
   const efficiency = {
     daily: '80%',
@@ -59,14 +78,19 @@ const Employee = () => {
     }
   };
 
-  const formatDate = (date) => {
-    return date.toISOString().split('T')[0];
-  };
+  const formatDate = (date) => date.toISOString().split('T')[0];
 
   const filteredLabels = Object.entries(efficiency).map(([key, value]) => ({
     label: key.charAt(0).toUpperCase() + key.slice(1),
     value,
   }));
+
+  const cardIcons = [
+    'https://cdn-icons-png.flaticon.com/512/1170/1170576.png',
+    'https://cdn-icons-png.flaticon.com/512/1170/1170583.png',
+    'https://cdn-icons-png.flaticon.com/512/1170/1170579.png',
+    'https://cdn-icons-png.flaticon.com/512/1170/1170580.png',
+  ];
 
   const chartData = {
     labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
@@ -84,17 +108,26 @@ const Employee = () => {
 
   const chartOptions = {
     maintainAspectRatio: false,
-    responsive: true,
-    plugins: {
-      legend: { display: false },
-    },
+    plugins: { legend: { display: false } },
     scales: {
-      y: { beginAtZero: true },
+      y: { ticks: { beginAtZero: true }, grid: { display: true } },
+      x: { grid: { display: false } },
     },
   };
 
+  const handleEditProfile = () => {
+    setProfileMenuOpen(false);
+    setShowEditForm(true);
+  };
+
+  const handleSaveProfile = () => {
+    localStorage.setItem('employeeName', editedName);
+    localStorage.setItem('employeePhoto', editedPhoto);
+    window.location.reload();
+  };
+
   return (
-    <div style={{ background: '#e6effaff', height: '100vh', display: 'flex', margin: 0, padding: 0 }}>
+    <div style={{ background: '#e6effaff', minHeight: '100vh', display: 'flex' }}>
       {sidebarOpen && (
         <div
           className="text-white d-flex flex-column justify-content-between p-3"
@@ -105,18 +138,21 @@ const Employee = () => {
             position: 'fixed',
             top: 0,
             left: 0,
+            zIndex: 1000,
           }}
         >
           <div>
-            <div className="text-center mb-4">
+            <div className="d-flex align-items-center mb-4">
               <img
                 src={employeePhoto || 'https://cdn-icons-png.flaticon.com/512/194/194938.png'}
                 alt="Profile"
-                className="rounded-circle mb-2"
-                style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+                className="rounded-circle me-2"
+                style={{ width: '50px', height: '50px', objectFit: 'cover' }}
               />
-              <p className="mb-0 fw-bold">{employeeName || 'Employee'}</p>
-              <p className="mb-0 text-white-50" style={{ fontSize: '13px' }}>{employeeId || 'ID not available'}</p>
+              <div>
+                <p className="mb-0 fw-bold">{employeeName || 'Employee'}</p>
+                <p className="mb-0 text-white-50" style={{ fontSize: '13px' }}>{employeeId || 'ID not available'}</p>
+              </div>
             </div>
             <hr className="border-light" />
             <div className="d-flex flex-column">
@@ -129,69 +165,94 @@ const Employee = () => {
               </button>
               <a
                 href="/"
-                className="text-white d-flex align-items-center text-decoration-none"
+                className="text-white d-flex align-items-center text-decoration-none mb-2"
                 style={{ paddingLeft: '0.25rem' }}
               >
                 <i className="bi bi-house me-2"></i> Home
               </a>
+              <a
+                href="/employee/reports"
+                className="text-white d-flex align-items-center text-decoration-none"
+                style={{ paddingLeft: '0.25rem' }}
+              >
+                <i className="bi bi-file-earmark-bar-graph me-2"></i> View Reports
+              </a>
             </div>
           </div>
-          <button className="btn btn-light w-100 mt-4" onClick={handleLogout}>
-            <i className="bi bi-box-arrow-right me-2"></i> Logout
-          </button>
+
+          <div className="mt-auto">
+            <hr className="border-light" />
+            <button
+              onClick={handleLogout}
+              className="btn text-white text-start d-flex align-items-center"
+              style={{ background: 'none', border: 'none', paddingLeft: 0 }}
+            >
+              <i className="bi bi-box-arrow-right me-2"></i> Logout
+            </button>
+          </div>
         </div>
       )}
 
-      <div className="flex-grow-1" style={{ marginLeft: sidebarOpen ? '250px' : '0', padding: '2rem', width: '100%' }}>
-        <div className="d-flex justify-content-between align-items-center px-4 py-3 rounded shadow-sm mb-4" style={{ backgroundColor: '#ffffff', color: '#000', position: 'sticky', top: 0, zIndex: 1000, marginTop: '0px' }}>
-          <button className="btn border d-flex align-items-center justify-content-center me-3" style={{ width: '40px', height: '40px' }} onClick={() => setSidebarOpen(!sidebarOpen)}>
+      <div className="flex-grow-1" style={{ marginLeft: sidebarOpen ? '250px' : '0', width: '100%' }}>
+        <div className="d-flex justify-content-between align-items-center px-4 py-2 shadow-sm bg-white sticky-top" style={{ zIndex: 999 }}>
+          <button className="btn btn-outline-primary" onClick={() => setSidebarOpen(!sidebarOpen)}>
             <i className="bi bi-list"></i>
           </button>
-          <h4 className="mb-0 flex-grow-1 text-primary">Work Efficiency Record</h4>
-          <i className="bi bi-bell-fill fs-4 text-primary"></i>
+          <h5 className="mb-0 text-primary">Employee Dashboard</h5>
+          <div className="position-relative">
+            <img
+              src={employeePhoto || 'https://cdn-icons-png.flaticon.com/512/194/194938.png'}
+              alt="Avatar"
+              className="rounded-circle"
+              style={{ width: '40px', height: '40px', cursor: 'pointer' }}
+              onClick={() => setProfileMenuOpen(!profileMenuOpen)}
+            />
+            {profileMenuOpen && (
+              <div className="position-absolute end-0 mt-2 p-2 bg-white border rounded shadow" style={{ minWidth: '160px' }}>
+                <button className="dropdown-item mb-1" onClick={handleEditProfile}>Edit Profile</button>
+                <button className="dropdown-item" onClick={handleLogout}>Logout</button>
+              </div>
+            )}
+          </div>
         </div>
 
-        <div ref={dashboardRef}>
-          <div className="row g-4 row-cols-1 row-cols-md-2 mb-4">
-            {filteredLabels.map((item, index) => {
-              const isSelected = selected === item.label;
-              return (
-                <div key={index} className="col">
-                  <div
-                    className={`card text-center shadow-sm h-100 ${isSelected ? 'border-primary border-3' : ''}`}
-                    style={{ backgroundColor: '#d0e3faff', cursor: 'pointer', borderRadius: '16px', border: '1px solid #dee2e6' }}
-                    onClick={() => handleCardClick(item.label)}
-                  >
-                    <div className="card-body">
-                      <h5 className="card-title text-primary">{item.label}</h5>
-                      <p className="card-text fs-4">{item.value || 'Not updated'}</p>
-                    </div>
+        <div className="p-3" ref={dashboardRef}>
+          {/* Efficiency Cards */}
+          <div className="row g-4 row-cols-1 row-cols-sm-2 row-cols-md-4 mb-4">
+            {filteredLabels.map((item, index) => (
+              <div key={index} className="col">
+                <div
+                  className="card shadow-sm h-100 p-3"
+                  onClick={() => handleCardClick(item.label)}
+                  style={{ borderRadius: '16px', cursor: 'pointer', backgroundColor: '#ffffff' }}
+                >
+                  <div className="d-flex align-items-center mb-2">
+                    <img src={cardIcons[index % cardIcons.length]} alt="icon" style={{ width: '30px', marginRight: '10px' }} />
+                    <h6 className="text-muted mb-0">{item.label}</h6>
                   </div>
+                  <div className="fs-4 fw-bold text-primary">{item.value}</div>
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
 
+          {/* Chart */}
           {selected && (
-            <div className="mb-4">
-              <div className="card shadow-sm border border-primary" style={{ borderRadius: '16px', backgroundColor: '#d0e3faff' }}>
-                <div className="card-body">
-                  <h5 className="card-title text-primary">{selected} Efficiency Details</h5>
-                  <p className="card-text">Efficiency: {efficiency[selected.toLowerCase()]}</p>
-                  <div style={{ height: '150px' }}>
-                    <Line data={chartData} options={chartOptions} />
-                  </div>
-                </div>
+            <div className="mb-4 p-3 shadow-sm rounded" style={{ backgroundColor: '#ffffff' }}>
+              <h5 className="text-primary mb-3">{selected} Efficiency Record</h5>
+              <div style={{ height: '240px' }}>
+                <Line data={chartData} options={chartOptions} />
               </div>
             </div>
           )}
 
+          {/* Attendance Summary */}
           <div className="row g-4 row-cols-1 row-cols-md-2 mb-4">
             <div className="col">
               <div className="card text-center shadow-sm" style={{ backgroundColor: '#e9f9ef', border: '1px solid #c5f0d2', color: '#198754', borderRadius: '16px' }}>
                 <div className="card-body">
                   <h5 className="mb-2">Present Percentage</h5>
-                  <p className="fs-3 mb-0">{presentPercent || 'Not updated'}</p>
+                  <p className="fs-3 mb-0">{presentPercent}</p>
                 </div>
               </div>
             </div>
@@ -199,55 +260,80 @@ const Employee = () => {
               <div className="card text-center shadow-sm" style={{ backgroundColor: '#ffecec', border: '1px solid #f1c2c2', color: '#dc3545', borderRadius: '16px' }}>
                 <div className="card-body">
                   <h5 className="mb-2">Absent Percentage</h5>
-                  <p className="fs-3 mb-0">{absentPercent || 'Not updated'}</p>
+                  <p className="fs-3 mb-0">{absentPercent}</p>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="p-4 rounded shadow-sm" style={{ backgroundColor: '#d0e3faff' }}>
+          {/* Calendar and Efficiency Picker */}
+          <div className="p-4 rounded shadow-sm mb-4" style={{ backgroundColor: '#d0e3faff' }}>
             <h5 className="text-primary mb-3">Attendance Calendar</h5>
             <Calendar
               value={calendarDate}
-              onChange={setCalendarDate}
+              onChange={(date) => {
+                setCalendarDate(date);
+                setSelectedDate(date);
+              }}
               tileClassName={({ date }) => {
                 const formatted = formatDate(date);
-                if (presentDates.includes(formatted)) return 'present-day';
-                if (absentDates.includes(formatted)) return 'absent-day';
-
-                const isSaturday = date.getDay() === 6;
-                const month = date.getMonth();
-                const year = date.getFullYear();
-                let count = 0;
-                for (let d = 1; d <= date.getDate(); d++) {
-                  const temp = new Date(year, month, d);
-                  if (temp.getDay() === 6) count++;
-                }
-                if (isSaturday && count === 2) return 'second-saturday';
+                const level = timesheetDataMap[formatted];
+                if (level === 'high') return 'present-day';
+                if (level === 'medium') return 'second-saturday';
+                if (level === 'low') return 'absent-day';
                 return null;
               }}
               className="w-100 border-0"
             />
+            {selectedDate && (
+              <div className="mt-3 text-center">
+                <p>Selected Date: <strong>{formatDate(selectedDate)}</strong></p>
+                <div className="btn-group">
+                  <button className="btn btn-success" onClick={() => handleEfficiencyClick('high')}>High</button>
+                  <button className="btn btn-warning" onClick={() => handleEfficiencyClick('medium')}>Medium</button>
+                  <button className="btn btn-danger" onClick={() => handleEfficiencyClick('low')}>Low</button>
+                </div>
+              </div>
+            )}
           </div>
-        </div>
-      </div>
 
-      <style>{`
-        .present-day {
-          background-color: #28a745 !important;
-          color: white !important;
-          border-radius: 6px;
-        }
-        .absent-day {
-          background-color: #dc3545 !important;
-          color: white !important;
-          border-radius: 6px;
-        }
-        .second-saturday {
-          background-color: #ffc107 !important;
-          color: black !important;
-        }
-      `}</style>
+          {/* Profile Edit Form */}
+          {showEditForm && (
+            <div className="p-4 mb-4 rounded shadow-sm bg-white">
+              <h5 className="text-primary mb-3">Edit Profile</h5>
+              <div className="mb-3">
+                <label className="form-label">Name</label>
+                <input type="text" className="form-control" value={editedName} onChange={(e) => setEditedName(e.target.value)} />
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Photo URL</label>
+                <input type="text" className="form-control" value={editedPhoto} onChange={(e) => setEditedPhoto(e.target.value)} />
+              </div>
+              <button className="btn btn-primary me-2" onClick={handleSaveProfile}>Save</button>
+              <button className="btn btn-secondary" onClick={() => setShowEditForm(false)}>Cancel</button>
+            </div>
+          )}
+        </div>
+
+        {/* Efficiency Calendar Styling */}
+        <style>{`
+          .present-day {
+            background-color: #28a745 !important;
+            color: white !important;
+            border-radius: 6px;
+          }
+          .absent-day {
+            background-color: #dc3545 !important;
+            color: white !important;
+            border-radius: 6px;
+          }
+          .second-saturday {
+            background-color: #ffc107 !important;
+            color: black !important;
+            border-radius: 6px;
+          }
+        `}</style>
+      </div>
     </div>
   );
 };

@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import { Link } from 'react-router-dom';
+
 
 import './Navbar.css'; 
 import navbarIcon from '/assets/images/tansamlogo.png';
@@ -82,9 +84,9 @@ const Navbar = () => {
               <a className="nav-link" href="#contact">Contact</a>
             </li>
             <li className="nav-item">
-              <a className="btn login-btn ms-3" href="#login" onClick={handleRipple}>
+              <Link className="btn login-btn ms-3" to="/dashboard/login" onClick={handleRipple}>
                 Login
-              </a>
+              </Link>
             </li>
           </ul>
         </div>

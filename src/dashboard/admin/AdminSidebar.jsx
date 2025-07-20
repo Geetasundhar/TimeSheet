@@ -1,13 +1,13 @@
 import React from 'react';
-import { FaUserPlus, FaTachometerAlt, FaUsers, FaSignOutAlt, FaHome} from 'react-icons/fa';
-import { Link, useLocation } from 'react-router-dom';
+import { FaUserPlus, FaTachometerAlt, FaUsers, FaSignOutAlt, FaHome } from 'react-icons/fa';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import profileImg from "/assets/images/sampleimage.png";
 
 const AdminSidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const navItems = [
-    { label: 'Home', icon: <FaHome />, path: '/' },
     { label: 'Dashboard', icon: <FaTachometerAlt />, path: '/dashboard/admin' },
     { label: 'Add Member', icon: <FaUserPlus />, path: '/dashboard/admin/add-member' },
     { label: 'Members', icon: <FaUsers />, path: '/dashboard/admin/members' },
@@ -17,6 +17,11 @@ const AdminSidebar = () => {
     if (window.innerWidth < 992) {
       document.getElementById('adminSidebar')?.classList.add('d-none');
     }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    navigate('/');
   };
 
   return (
@@ -66,13 +71,12 @@ const AdminSidebar = () => {
 
       {/* 🔹 Logout Button */}
       <div className="mt-auto px-3 pb-4">
-        <Link
-          to="/logout"
-          className="sidebar-link nav-link d-flex align-items-center text-white"
-          onClick={handleLinkClick}
+        <button
+          className="sidebar-link nav-link d-flex align-items-center text-white bg-transparent border-0"
+          onClick={handleLogout}
         >
           <FaSignOutAlt className="me-2" /> Logout
-        </Link>
+        </button>
       </div>
 
       {/* 🔹 Styles */}
@@ -91,6 +95,10 @@ const AdminSidebar = () => {
 
         .sidebar-link {
           transition: all 0.3s ease;
+        }
+
+        button.sidebar-link:focus {
+          outline: none;
         }
       `}</style>
     </div>

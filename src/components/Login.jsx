@@ -1,96 +1,161 @@
 import React, { useState } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap-icons/font/bootstrap-icons.css';
+import {
+  Card,
+  CardContent,
+  Typography,
+  TextField,
+  Button,
+  Box,
+} from '@mui/material';
+
+import { Link, useNavigate } from 'react-router-dom';
+import HomeIcon from '@mui/icons-material/Home';
+import './Login.css'; 
+
+import { users } from '../data/users'; 
 
 const Login = () => {
-  const [id, setId] = useState('');
-  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
   const [showForgot, setShowForgot] = useState(false);
+  const [formData, setFormData] = useState({ id: '', password: '' });
   const [email, setEmail] = useState('');
 
-  const handleLogin = () => {
-    alert(`Logging in with ID: ${id}`);
+  const handleChange = (e) => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleForgotSubmit = () => {
-    alert(`Password reset link sent to ${email}`);
-    setEmail('');
-    setShowForgot(false);
+  const handleLogin = (e) => {
+    e.preventDefault();
+
+    const user = users.find(
+      u => u.empId === formData.id && u.password === formData.password
+    );
+
+    if (user) {
+      localStorage.setItem('employeeId', user.empId);
+      localStorage.setItem('employeeName', user.name || 'Employee');
+      localStorage.setItem('employeePhoto', user.photo || '');
+      switch (user.role) {
+        case 'admin':
+          navigate('/dashboard/admin');
+          break;
+        case 'hr':
+          navigate('/hr');
+          break;
+        case 'teamlead':
+          navigate('/tl/dashboard');
+          break;
+        case 'employee':
+          navigate('/dashboard/Employee');
+          break;
+        default:
+          alert('Unknown role');
+      }
+    } else {
+      alert('Invalid Employee ID or Password');
+    }
+  };
+
+  const handleForgotSubmit = (e) => {
+    e.preventDefault();
+    alert(`Verification code sent to ${email}`);
   };
 
   return (
     <div style={styles.wrapper}>
       <div style={styles.animatedBackground}></div>
 
-      {/* Home Icon */}
-      <a href="/" style={styles.homeIcon}>
-        <i className="bi bi-house-fill" style={{ fontSize: '24px', color: 'dark grey' }}></i>
-      </a>
+      <Link to="/" style={styles.homeIcon}>
+        <HomeIcon fontSize="large" />
+      </Link>
 
-      <div className="container d-flex justify-content-center align-items-center vh-100">
-        <div className="card p-4 shadow-lg" style={styles.card}>
-          <h2 className="text-center mb-4">Login</h2>
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100vh"
+        zIndex={1}
+      >
+        <Card style={styles.card}>
+          <CardContent>
+            <Typography variant="h5" gutterBottom>
+              {showForgot ? 'Forgot Password' : 'Login'}
+            </Typography>
 
-          {!showForgot ? (
-            <>
-              <div className="mb-3">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Enter ID"
-                  value={id}
-                  onChange={(e) => setId(e.target.value)}
+            {!showForgot ? (
+              <form onSubmit={handleLogin}>
+                <TextField
+                  label="Employee ID"
+                  name="id"
+                  variant="outlined"
+                  fullWidth
+                  margin="normal"
+                  value={formData.id}
+                  onChange={handleChange}
                 />
-              </div>
-
-              <div className="mb-3">
-                <input
+                <TextField
+                  label="Password"
+                  name="password"
                   type="password"
-                  className="form-control"
-                  placeholder="Enter Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  variant="outlined"
+                  fullWidth
+                  margin="normal"
+                  value={formData.password}
+                  onChange={handleChange}
                 />
-              </div>
-
-              <button className="btn btn-primary w-100 mb-2" onClick={handleLogin}>
-                Login
-              </button>
-
-              <p
-                className="text-primary text-decoration-underline text-center"
-                style={{ cursor: 'pointer' }}
-                onClick={() => setShowForgot(true)}
-              >
-                Forgot Password?
-              </p>
-            </>
-          ) : (
-            <>
-              <h5 className="text-center">Reset Password</h5>
-              <div className="mb-3">
-                <input
-                  type="email"
-                  className="form-control"
-                  placeholder="Enter your email"
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  style={{ marginTop: '16px' }}
+                >
+                  Login
+                </Button>
+                <Typography
+                  variant="body2"
+                  align="right"
+                  style={{ marginTop: '10px', cursor: 'pointer', color: '#1976d2' }}
+                  onClick={() => setShowForgot(true)}
+                >
+                  Forgot Password?
+                </Typography>
+              </form>
+            ) : (
+              <form onSubmit={handleForgotSubmit}>
+                <TextField
+                  label="Email"
+                  variant="outlined"
+                  fullWidth
+                  margin="normal"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
-              </div>
-              <button className="btn btn-primary w-100 mb-2" onClick={handleForgotSubmit}>
-                Send Reset Link
-              </button>
-              <button className="btn btn-secondary w-100" onClick={() => setShowForgot(false)}>
-                Back to Login
-              </button>
-            </>
-          )}
-        </div>
-      </div>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  fullWidth
+                  style={{ marginTop: '16px' }}
+                  type="submit"
+                >
+                  Send Code
+                </Button>
+                <Typography
+                  variant="body2"
+                  align="left"
+                  style={{ marginTop: '10px', cursor: 'pointer', color: '#1976d2' }}
+                  onClick={() => setShowForgot(false)}
+                >
+                  ← Back to Login
+                </Typography>
+              </form>
+            )}
+          </CardContent>
+        </Card>
+      </Box>
     </div>
   );
 };
-
 
 const styles = {
   wrapper: {
@@ -108,30 +173,22 @@ const styles = {
     backgroundSize: '400% 400%',
     animation: 'gradientAnimation 15s ease infinite',
     zIndex: -1,
+    pointerEvents: 'none',
   },
   homeIcon: {
     position: 'absolute',
     top: '20px',
     left: '20px',
-    zIndex: 10,
+    zIndex: 2,
     textDecoration: 'none',
+    color: '#000',
   },
   card: {
     maxWidth: '400px',
     width: '100%',
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    zIndex: 1,
+    zIndex: 2,
   },
 };
-
-
-const styleSheet = document.createElement('style');
-styleSheet.innerHTML = `
-@keyframes gradientAnimation {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}`;
-document.head.appendChild(styleSheet);
 
 export default Login;

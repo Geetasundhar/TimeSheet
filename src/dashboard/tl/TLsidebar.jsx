@@ -4,7 +4,7 @@ import {
   FaTachometerAlt,
   FaUserPlus,
   FaClipboardCheck,
-  FaPowerOff,
+  FaPowerOff,FaProjectDiagram,
 } from 'react-icons/fa';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -38,6 +38,8 @@ const TLsidebar = () => {
     { label: 'Dashboard', icon: <FaTachometerAlt />, path: '/tl/dashboard' },
     { label: 'Edit Timesheet', icon: <FaClipboardCheck />, path: '/tl/edit-timesheet' },
     { label: 'Add Members', icon: <FaUserPlus />, path: '/tl/add-members' },
+    { label: 'Add Project', icon: <FaProjectDiagram  />, path: '/dashboard/tl/addproject' },
+
   ];
 
   return (

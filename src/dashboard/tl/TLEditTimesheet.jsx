@@ -6,6 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { FaRegStickyNote } from 'react-icons/fa';
 import * as XLSX from 'xlsx';
 import { Bar, Pie } from 'react-chartjs-2';
+import styled from 'styled-components';
 import {
   Chart as ChartJS,
   CategoryScale,

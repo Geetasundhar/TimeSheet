@@ -141,22 +141,51 @@ const TLdashboard = () => {
         )}
 
         {/* Styles */}
-        <style>{`
-          .summary-card {
-            transition: transform 0.3s ease, background-color 0.3s ease;
-          }
-          .summary-card:hover {
-            background-color: #f9f9f9;
-            transform: scale(1.02);
-          }
-          .summary-card.active-summary {
-            border: 2px solid #007bff;
-            background-color: #f0f8ff;
-          }
-          .nav-tabs .nav-link.active {
-            font-weight: 600;
-          }
-        `}</style>
+       <style>{`
+  .summary-card {
+    transition: transform 0.3s ease, background-color 0.3s ease;
+  }
+  .summary-card:hover {
+    background-color: #f9f9f9;
+    transform: scale(1.02);
+  }
+  .summary-card.active-summary {
+    border: 2px solid #007bff;
+    background-color: #f0f8ff;
+  }
+
+  .nav-tabs .nav-link {
+    color: #555;
+    font-weight: 500;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  .nav-tabs .nav-link:hover {
+    background-color: #f2f2f2;
+    color: #000;
+  }
+
+  .nav-tabs .nav-link.active {
+    color: #fff !important;
+    background-color: #007bff !important;
+    font-weight: 600;
+    border: none;
+    border-radius: 4px 4px 0 0;
+  }
+
+  .nav-tabs .nav-item:nth-child(1) .nav-link.active {
+    background-color: #007bff; /* Blue for Overview */
+  }
+
+  .nav-tabs .nav-item:nth-child(2) .nav-link.active {
+    background-color: #28a745; /* Green for Pending */
+  }
+
+  .nav-tabs .nav-item:nth-child(3) .nav-link.active {
+    background-color: #fd7e14; /* Orange for Team */
+  }
+`}</style>
+
       </div>
     </div></div>
   );

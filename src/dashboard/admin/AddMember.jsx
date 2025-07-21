@@ -140,6 +140,7 @@ const AddMember = () => {
                 <option value="hr">HR</option>
                 <option value="tl">Team Lead</option>
                 <option value="ceo">CEO</option>
+                <option value="employee">Employee</option>
               </select>
             </div>
 

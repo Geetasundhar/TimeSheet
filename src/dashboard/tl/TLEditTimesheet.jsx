@@ -473,8 +473,6 @@ select.form-select:focus {
   background-color: #f0f8ff;
   transition: transform 0.4s ease, box-shadow 0.4s ease;
   position: relative;
-  overflow: hidden;
-  animation: fadeSlideIn 0.5s ease;
 }
 
 
@@ -791,7 +789,9 @@ canvas {
 <div className="card mb-4">
   <div className="card-body">
     <h5 className="card-title">Pie Chart: Status Breakdown</h5>
-    <Pie data={pieChartData} />
+  <div style={{ maxWidth: '300px', margin: 'auto', animation:'none' }}>
+  <Pie data={pieChartData} />
+</div>
   </div>
 </div>
 <div className="card mb-4">

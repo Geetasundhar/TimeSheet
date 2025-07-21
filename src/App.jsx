@@ -33,8 +33,10 @@ import CreateProject from './dashboard/hr/CreateProject';
 import AssignTL from './dashboard/hr/AssignTL';
 import CompanyOverview from './dashboard/hr/CompanyOverview';
 
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+
 //TL
 import TLdashboard from './dashboard/tl/TLdashboard';
 import TLEditTimesheet from './dashboard/tl/TLEditTimesheet';
@@ -87,11 +89,19 @@ const App = () => {
           <Route path="create-project" element={<CreateProject />} />
           <Route path="assign-tl" element={<AssignTL />} />
           <Route path="company-overview" element={<CompanyOverview />} />
+
+          {/* ✅ CEO content rendered inside HR layout */}
+          <Route path="analytics" element={<Analytics />} />
+          <Route path="team-reports" element={<TeamReports />} />
+          <Route path="all-entries" element={<AllEntries />} />
+          <Route path="employee-logs" element={<EmployeeLogs />} />
+
         </Route>
 
         {/*team lead route */}
         {/* TL Routes */}
- <Route>
+      
+      <Route>
         <Route path="/tl/dashboard" element={<TLdashboard />} />
         <Route path="/tl/edit-timesheet" element={<TLEditTimesheet />} />
         <Route path="/tl/add-members" element={<TLAddMembers />} />

@@ -25,13 +25,21 @@ const AdminTopbar = ({ onToggle }) => {
   return (
     <>
       {/* 🔹 Topbar */}
-      <div className="d-flex justify-content-between align-items-center px-4 py-2 shadow-sm bg-white position-sticky top-0" style={{ zIndex: 1000 }}>
-        <button className="btn btn-outline-primary" onClick={onToggle}>
-          <FaBars />
-        </button>
+      <div
+        className="d-flex justify-content-between align-items-center px-4 py-2 shadow-sm bg-white position-sticky top-0"
+        style={{ zIndex: 1000 }}
+      >
+        <div className="d-flex align-items-center gap-3">
+          <button className="btn btn-outline-primary" onClick={onToggle}>
+            <FaBars />
+          </button>
+          <h5 className="mb-0 fw-semibold text-primary">Admin Dashboard</h5>
+        </div>
 
         <div className="ms-auto d-flex align-items-center gap-2">
-          <span className="fw-semibold text-muted d-none d-md-inline">Admin</span>
+          <span className="fw-semibold text-muted d-none d-md-inline">
+            Admin
+          </span>
           <div className="dropdown">
             <img
               src={profileImg}
@@ -44,32 +52,43 @@ const AdminTopbar = ({ onToggle }) => {
             />
             <ul className="dropdown-menu dropdown-menu-end shadow-sm">
               <li>
-                <button className="dropdown-item" onClick={() => setShowEditModal(true)}>
+                <button
+                  className="dropdown-item"
+                  onClick={() => setShowEditModal(true)}
+                >
                   Edit Profile
                 </button>
               </li>
-              <li><hr className="dropdown-divider" /></li>
               <li>
-                <a className="dropdown-item text-danger" href="#">Logout</a>
+                <hr className="dropdown-divider" />
+              </li>
+              <li>
+                <a className="dropdown-item text-danger" href="/">
+                  Logout
+                </a>
               </li>
             </ul>
           </div>
         </div>
       </div>
 
-      <div className="px-4 pt-3">
-        <h3 className="fw-bold admin-dashboard-heading">Admin Dashboard</h3>
-      </div>
-
       {/* 🔹 Edit Modal */}
       {showEditModal && (
-        <div className="modal d-block" tabIndex="-1" style={{ background: "rgba(0,0,0,0.5)" }}>
+        <div
+          className="modal d-block"
+          tabIndex="-1"
+          style={{ background: "rgba(0,0,0,0.5)" }}
+        >
           <div className="modal-dialog modal-lg">
             <div className="modal-content">
               <form onSubmit={handleSubmit}>
                 <div className="modal-header">
                   <h5 className="modal-title">Edit Admin Profile</h5>
-                  <button type="button" className="btn-close" onClick={() => setShowEditModal(false)}></button>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setShowEditModal(false)}
+                  ></button>
                 </div>
                 <div className="modal-body row g-3">
                   <div className="col-md-6">
@@ -117,8 +136,14 @@ const AdminTopbar = ({ onToggle }) => {
                   </div>
                 </div>
                 <div className="modal-footer">
-                  <button type="submit" className="btn btn-primary">Save Changes</button>
-                  <button type="button" className="btn btn-secondary" onClick={() => setShowEditModal(false)}>
+                  <button type="submit" className="btn btn-primary">
+                    Save Changes
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => setShowEditModal(false)}
+                  >
                     Cancel
                   </button>
                 </div>
@@ -142,11 +167,11 @@ const AdminTopbar = ({ onToggle }) => {
           border: none;
         }
         .admin-dashboard-heading {
-  background: linear-gradient(90deg, #4b86b4, #3a6d99);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-size: 1.75rem;
-}
+          background: linear-gradient(90deg, #4b86b4, #3a6d99);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          font-size: 1.75rem;
+        }
       `}</style>
     </>
   );

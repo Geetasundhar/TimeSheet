@@ -1,3 +1,4 @@
+// All imports
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Calendar from 'react-calendar';
@@ -43,7 +44,6 @@ const Employee = () => {
 
   const presentPercent = '75%';
   const absentPercent = '25%';
-
   const presentDates = [];
   const absentDates = [];
 
@@ -95,7 +95,7 @@ const Employee = () => {
     maintainAspectRatio: false,
     plugins: { legend: { display: false } },
     scales: {
-      y: { ticks: { beginAtZero: true }, grid: { display: true } },
+      y: { beginAtZero: true },
       x: { grid: { display: false } },
     },
   };
@@ -181,6 +181,7 @@ const Employee = () => {
       )}
 
       <div className="flex-grow-1" style={{ marginLeft: sidebarOpen ? '250px' : '0', width: '100%' }}>
+        {/* Topbar */}
         <div className="d-flex justify-content-between align-items-center px-4 py-2 shadow-sm bg-white sticky-top" style={{ zIndex: 999 }}>
           <button className="btn btn-outline-primary" onClick={() => setSidebarOpen(!sidebarOpen)}>
             <i className="bi bi-list"></i>
@@ -196,39 +197,35 @@ const Employee = () => {
             />
             {profileMenuOpen && (
               <div className="position-absolute end-0 mt-2 p-2 bg-white border rounded shadow" style={{ minWidth: '160px' }}>
-                <button className="dropdown-item mb-1" onClick={handleEditProfile}>
-                  Edit Profile
-                </button>
-                <button className="dropdown-item" onClick={handleLogout}>
-                  Logout
-                </button>
+                <button className="dropdown-item mb-1" onClick={handleEditProfile}>Edit Profile</button>
+                <button className="dropdown-item" onClick={handleLogout}>Logout</button>
               </div>
             )}
           </div>
         </div>
 
-        <div className="p-3" ref={dashboardRef}>
-          {/* Four Cards in Single Row */}
-          <div className="row g-4 row-cols-1 row-cols-sm-2 row-cols-md-4 row-cols-lg-4 mb-4">
+        {/* Dashboard content */}
+        <div className="p-4" ref={dashboardRef}>
+          <div className="row g-4 row-cols-1 row-cols-md-4 mb-4">
             {filteredLabels.map((item, index) => (
               <div key={index} className="col">
                 <div
-                  className="card shadow-sm h-100 p-3 d-flex flex-column justify-content-between"
+                  className="card shadow-sm h-100 p-3"
                   onClick={() => handleCardClick(item.label)}
-                  style={{ borderRadius: '16px', cursor: 'pointer', backgroundColor: '#ffffff' }}
+                  style={{ borderRadius: '16px', cursor: 'pointer' }}
                 >
                   <div className="d-flex align-items-center mb-2">
                     <img src={cardIcons[index % cardIcons.length]} alt="icon" style={{ width: '30px', marginRight: '10px' }} />
                     <h6 className="text-muted mb-0">{item.label}</h6>
                   </div>
-                  <div className="fs-4 fw-bold text-primary">{item.value || 'Not updated'}</div>
+                  <div className="fs-4 fw-bold text-primary">{item.value}</div>
                 </div>
               </div>
             ))}
           </div>
 
           {selected && (
-            <div className="mb-4 p-3 shadow-sm rounded" style={{ backgroundColor: '#ffffff' }}>
+            <div className="mb-4 p-3 shadow-sm rounded bg-white">
               <h5 className="text-primary mb-3">{selected} Efficiency Record</h5>
               <div style={{ height: '240px' }}>
                 <Line data={chartData} options={chartOptions} />
@@ -241,7 +238,7 @@ const Employee = () => {
               <div className="card text-center shadow-sm" style={{ backgroundColor: '#e9f9ef', border: '1px solid #c5f0d2', color: '#198754', borderRadius: '16px' }}>
                 <div className="card-body">
                   <h5 className="mb-2">Present Percentage</h5>
-                  <p className="fs-3 mb-0">{presentPercent || 'Not updated'}</p>
+                  <p className="fs-3 mb-0">{presentPercent}</p>
                 </div>
               </div>
             </div>
@@ -249,13 +246,14 @@ const Employee = () => {
               <div className="card text-center shadow-sm" style={{ backgroundColor: '#ffecec', border: '1px solid #f1c2c2', color: '#dc3545', borderRadius: '16px' }}>
                 <div className="card-body">
                   <h5 className="mb-2">Absent Percentage</h5>
-                  <p className="fs-3 mb-0">{absentPercent || 'Not updated'}</p>
+                  <p className="fs-3 mb-0">{absentPercent}</p>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="p-4 rounded shadow-sm mb-4" style={{ backgroundColor: '#d0e3faff' }}>
+          {/* Calendar */}
+          <div className="p-4 rounded shadow-sm mb-4 bg-white">
             <h5 className="text-primary mb-3">Attendance Calendar</h5>
             <Calendar
               value={calendarDate}
@@ -264,70 +262,55 @@ const Employee = () => {
                 const formatted = formatDate(date);
                 if (presentDates.includes(formatted)) return 'present-day';
                 if (absentDates.includes(formatted)) return 'absent-day';
-
-                const isSaturday = date.getDay() === 6;
-                const month = date.getMonth();
-                const year = date.getFullYear();
-                let count = 0;
-                for (let d = 1; d <= date.getDate(); d++) {
-                  const temp = new Date(year, month, d);
-                  if (temp.getDay() === 6) count++;
-                }
-                if (isSaturday && count === 2) return 'second-saturday';
                 return null;
               }}
               className="w-100 border-0"
             />
           </div>
-
-          {showEditForm && (
-            <div className="p-4 mb-4 rounded shadow-sm bg-white">
-              <h5 className="text-primary mb-3">Edit Profile</h5>
-              <div className="mb-3">
-                <label className="form-label">Name</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={editedName}
-                  onChange={(e) => setEditedName(e.target.value)}
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Photo URL</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={editedPhoto}
-                  onChange={(e) => setEditedPhoto(e.target.value)}
-                />
-              </div>
-              <button className="btn btn-primary me-2" onClick={handleSaveProfile}>
-                Save
-              </button>
-              <button className="btn btn-secondary" onClick={() => setShowEditForm(false)}>
-                Cancel
-              </button>
-            </div>
-          )}
         </div>
-
-        <style>{`
-          .present-day {
-            background-color: #28a745 !important;
-            color: white !important;
-            border-radius: 6px;
-          }
-          .absent-day {
-            background-color: #dc3545 !important;
-            color: white !important;
-            border-radius: 6px;
-          }
-          .second-saturday {
-            background-color: #ffc107 !important;
-            color: black !important;
-          }
-        `}</style>
       </div>
+
+      {/* Edit Profile Modal */}
+      {showEditForm && (
+        <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Edit Profile</h5>
+                <button type="button" className="btn-close" onClick={() => setShowEditForm(false)}></button>
+              </div>
+              <div className="modal-body">
+                <div className="mb-3">
+                  <label className="form-label">Name</label>
+                  <input type="text" className="form-control" value={editedName} onChange={(e) => setEditedName(e.target.value)} />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Photo URL</label>
+                  <input type="text" className="form-control" value={editedPhoto} onChange={(e) => setEditedPhoto(e.target.value)} />
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-secondary" onClick={() => setShowEditForm(false)}>Cancel</button>
+                <button className="btn btn-primary" onClick={handleSaveProfile}>Save</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Calendar Colors */}
+      <style>{`
+        .present-day {
+          background-color: #28a745 !important;
+          color: white !important;
+          border-radius: 6px;
+        }
+        .absent-day {
+          background-color: #dc3545 !important;
+          color: white !important;
+          border-radius: 6px;
+        }
+      `}</style>
     </div>
   );
 };

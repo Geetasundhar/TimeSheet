@@ -8,6 +8,7 @@ const AddMember = () => {
     role: 'hr',
     phone: '',
     employeeId: '',
+    department: '',
     password: '',
   });
 
@@ -28,7 +29,7 @@ const AddMember = () => {
     e.preventDefault();
 
     const passwordRegex =
-      /^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[@$!%*?&]).{8,}$/;
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
 
     if (!passwordRegex.test(formData.password)) {
       alert('Password must include uppercase, lowercase, number, special character and be at least 8 characters long.');
@@ -48,6 +49,7 @@ const AddMember = () => {
       role: 'hr',
       phone: '',
       employeeId: '',
+      department: '',
       password: '',
     });
 
@@ -55,20 +57,20 @@ const AddMember = () => {
   };
 
   return (
-  <>
-    {successMessage && (
-      <div className="custom-toast">Member added successfully!</div>
-    )}
+    <>
+      {successMessage && (
+        <div className="custom-toast">Member added successfully!</div>
+      )}
 
-    <div className="container-fluid px-4 py-4">
-      <h2 className="fw-bold mb-4 text-primary">Add New Member</h2>
-      <div
-        className="card shadow-sm border-0 p-4 mx-auto add-member-card"
-        style={{ maxWidth: '960px' }}
-      >
-        <form onSubmit={handleSubmit}>
-          <div className="row g-4">
-            <div className="col-md-4">
+      <div className="container-fluid px-4 py-4">
+        <h2 className="fw-bold mb-4 text-primary">Add New Member</h2>
+
+        <div
+          className="card shadow-sm border-0 p-4 mx-auto add-member-card"
+          style={{ maxWidth: '600px' }}
+        >
+          <form onSubmit={handleSubmit}>
+            <div className="mb-3">
               <input
                 type="text"
                 className="form-control"
@@ -79,7 +81,8 @@ const AddMember = () => {
                 required
               />
             </div>
-            <div className="col-md-4">
+
+            <div className="mb-3">
               <input
                 type="email"
                 className="form-control"
@@ -90,7 +93,8 @@ const AddMember = () => {
                 required
               />
             </div>
-            <div className="col-md-4">
+
+            <div className="mb-3">
               <input
                 type="text"
                 className="form-control"
@@ -101,7 +105,8 @@ const AddMember = () => {
                 required
               />
             </div>
-            <div className="col-md-4">
+
+            <div className="mb-3">
               <input
                 type="text"
                 className="form-control"
@@ -112,7 +117,20 @@ const AddMember = () => {
                 required
               />
             </div>
-            <div className="col-md-4">
+
+            <div className="mb-3">
+              <input
+                type="text"
+                className="form-control"
+                name="department"
+                placeholder="Department"
+                value={formData.department}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="mb-3">
               <select
                 className="form-select"
                 name="role"
@@ -125,122 +143,127 @@ const AddMember = () => {
               </select>
             </div>
 
-            <div className="col-md-4">
-              <div className="position-relative">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  className="form-control pe-5"
-                  name="password"
-                  placeholder="Password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                />
-                <span
-                  className="password-toggle-icon"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <FaEyeSlash /> : <FaEye />}
-                </span>
-              </div>
+            <div className="mb-3 position-relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                className="form-control pe-5"
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+              <span
+                className="password-toggle-icon"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
               {showExample && (
                 <div className="mt-2 text-muted" style={{ fontSize: '0.85rem' }}>
                   Try: <strong>Secure@2025!</strong>
                 </div>
               )}
             </div>
-          </div>
 
-          <div className="row mt-4">
-            <div className="col text-end">
+            <div className="text-end mt-4">
               <button className="btn btn-primary" type="submit">
                 Add Member
               </button>
             </div>
-          </div>
-        </form>
-      </div>
+          </form>
+        </div>
 
-      <style>{`
-        .add-member-card {
-          background: #dbeaf7;
-          border-radius: 20px;
-        }
+        <style>{`
+          .add-member-card {
+            background: #dbeaf7;
+            border-radius: 20px;
+          }
 
-        .form-control,
-        .form-select {
-          border-radius: 12px;
-          padding: 12px;
-          border: 1px solid #c2ced9;
-          box-shadow: none;
-          background-color: #fff;
-          transition: none !important;
-        }
+          .form-control,
+          .form-select {
+            border-radius: 12px;
+            padding: 12px;
+            border: 1px solid #c2ced9;
+            box-shadow: none;
+            background-color: #fff;
+            transition: none !important;
+          }
 
-        .form-control:hover,
-        .form-select:hover {
-          background-color: #fff !important;
-        }
+          .form-control:hover,
+          .form-select:hover {
+            background-color: #fff !important;
+          }
 
-        .form-control:focus,
-        .form-select:focus {
-          border-color: #4682b4;
-          box-shadow: 0 0 0 0.1rem rgba(70, 130, 180, 0.25);
-        }
+          .form-control:focus,
+          .form-select:focus {
+            border-color: #4682b4;
+            box-shadow: 0 0 0 0.1rem rgba(70, 130, 180, 0.25);
+          }
 
-        .btn-primary {
-          background: #139ff0ff;
-          border: none;
-          border-radius: 30px;
-          padding: 10px 24px;
-          font-weight: 600;
-        }
+          .btn-primary {
+            background: #139ff0ff;
+            border: none;
+            border-radius: 30px;
+            padding: 10px 24px;
+            font-weight: 600;
+          }
 
-        .btn-primary:hover {
-          background: #3a6d99;
-        }
+          .btn-primary:hover {
+            background: #3a6d99;
+          }
 
-        .custom-toast {
-          position: fixed;
-          top: 20px;
-          right: 20px;
-          background-color: #ffffff;
-          color: #198754;
-          padding: 12px 20px;
-          border-radius: 12px;
-          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
-          font-weight: 500;
-          z-index: 1055;
-          border: 1px solid #c3e6cb;
-          pointer-events: none;
-        }
+          .password-toggle-icon {
+            position: absolute;
+            top: 50%;
+            right: 14px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6c757d;
+            font-size: 1rem;
+            z-index: 5;
+            background: #fff;
+            padding: 2px;
+          }
 
-        .position-relative {
-          position: relative;
-        }
-
-        .password-toggle-icon {
-          position: absolute;
-          top: 50%;
-          right: 14px;
-          transform: translateY(-50%);
-          cursor: pointer;
-          color: #6c757d;
-          font-size: 1rem;
-          z-index: 5;
-          background: #fff;
-          padding: 2px;
-        }
-
-        .container-fluid {
-          background-color: rgba(255, 255, 255, 0.9);
-          position: relative;
-          z-index: 1;
-        }
-      `}</style>
-    </div>
-  </>
-);
+          .container-fluid {
+            background-color: rgba(255, 255, 255, 0.9);
+            position: relative;
+            z-index: 1;
+          }
+            .custom-toast {
+  position: fixed;
+  top: 80px; /* Adjust if your topbar height is different */
+  right: 20px;
+  background-color: #d1e7dd;
+  color: #0f5132;
+  border: 1px solid #badbcc;
+  padding: 10px 16px;
+  border-radius: 8px;
+  max-width: 300px;  /* Reduced width */
+  width: fit-content;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 1055;
+  font-weight: 500;
+  animation: slideIn 0.3s ease-out;
 }
+
+/* Optional animation */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+        `}</style>
+      </div>
+    </>
+  );
+};
 
 export default AddMember;

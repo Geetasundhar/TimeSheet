@@ -19,5 +19,10 @@ export const users = [
     empId: 'emp001',
     password: 'emppass',
     role: 'employee'
+  },
+  {
+    empId: 'ceo001',
+    password: 'ceopass',
+    role: 'ceo'
   }
 ];

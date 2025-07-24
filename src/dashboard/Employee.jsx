@@ -151,17 +151,21 @@ const Employee = () => {
                 <i className="bi bi-bar-chart-line me-2"></i> Dashboard
               </button>
               <a
-                href="/"
+                href="/dashboard/EmployeeTS"
                 className="text-white d-flex align-items-center text-decoration-none mb-2"
                 style={{ paddingLeft: '0.25rem' }}
               >
-                <i className="bi bi-house me-2"></i> Home
+                <i className="bi bi-clipboard-data me-2"></i> Your Timesheet
+
               </a>
               <a
                 href="/employee/reports"
                 className="text-white d-flex align-items-center text-decoration-none"
                 style={{ paddingLeft: '0.25rem' }}
+
+                
               >
+                
                 <i className="bi bi-file-earmark-bar-graph me-2"></i> View Reports
               </a>
             </div>

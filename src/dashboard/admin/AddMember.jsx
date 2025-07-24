@@ -123,10 +123,10 @@ const AddMember = () => {
                 type="text"
                 className="form-control"
                 name="department"
-                placeholder="Department"
+                placeholder="Department (optional)"
                 value={formData.department}
                 onChange={handleChange}
-                required
+                
               />
             </div>
 

@@ -5,7 +5,6 @@ import TLtopbar from './TLtopbar';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaUser, FaTrash } from 'react-icons/fa';
 
-
 const TLAddMembers = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [teamMembers, setTeamMembers] = useState([]);
@@ -13,8 +12,14 @@ const TLAddMembers = () => {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem('tl_team_members')) || [];
-    setTeamMembers(stored);
+    const stored = JSON.parse(localStorage.getItem('tl_team_members'));
+    if (stored && stored.length > 0) {
+      setTeamMembers(stored);
+    } else {
+      const dummyMembers = ['Alice Johnson', 'Bob Smith', 'Charlie Brown', 'Diana Prince'];
+      setTeamMembers(dummyMembers);
+      localStorage.setItem('tl_team_members', JSON.stringify(dummyMembers));
+    }
   }, []);
 
   const addMember = () => {
@@ -50,11 +55,13 @@ const TLAddMembers = () => {
       <div style={{ flex: 1 }}>
         <div className="bg-white shadow-sm" style={{ height: '70px', zIndex: 1 }}>
           <TLtopbar onToggle={() => setSidebarOpen(!sidebarOpen)} />
-        </div><style>{`/* Fade-in container animation */
+        </div>
+
+        <style>{`
+/* Fade-in container animation */
 .fade-in {
   animation: fadeInUp 0.6s ease;
 }
-
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -70,7 +77,6 @@ const TLAddMembers = () => {
 .animated-list {
   animation: listFade 0.4s ease both;
 }
-
 @keyframes listFade {
   from {
     opacity: 0;
@@ -119,7 +125,6 @@ const TLAddMembers = () => {
   border-radius: 15px;
   animation: scaleFade 0.4s ease;
 }
-
 @keyframes scaleFade {
   from {
     opacity: 0;
@@ -130,7 +135,6 @@ const TLAddMembers = () => {
     transform: scale(1);
   }
 }
-
 .modal-header-custom {
   border-bottom: none;
 }
@@ -164,7 +168,7 @@ const TLAddMembers = () => {
   background-color: #0056b3;
   transform: scale(1.02);
 }
-  .btn-success {
+.btn-success {
   transition: background-color 0.3s ease;
 }
 .btn-success:hover {
@@ -187,20 +191,9 @@ const TLAddMembers = () => {
 .member-card:hover {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
 }
-  .member-card-wrapper {
-  width: 280px; /* Compact width */
+.member-card-wrapper {
+  width: 280px;
 }
-
-.member-card {
-  border-radius: 16px;
-  transition: box-shadow 0.3s ease;
-}
-
-.member-card:hover {
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-}
-
-
 `}</style>
 
         <div className="container-fluid p-4 fade-in" style={{ marginTop: '20px' }}>
@@ -210,41 +203,37 @@ const TLAddMembers = () => {
             + Add New Member
           </Button>
 
-          
-                <div className="d-flex flex-wrap justify-content-center gap-3">
-  <AnimatePresence>
-    {teamMembers.map((member, index) => (
-      <motion.div
-        key={member}
-        className="member-card-wrapper"
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.9 }}
-        transition={{ duration: 0.3, delay: index * 0.05 }}
-      >
-        <div className="card shadow member-card">
-          <div className="card-body d-flex justify-content-between align-items-center">
-            <div className="d-flex align-items-center">
-              <FaUser className="text-primary me-2" size={20} />
-              <span>{member}</span>
-            </div>
-            <motion.button
-              className="btn btn-sm btn-outline-danger rounded-circle"
-              onClick={() => removeMember(member)}
-              whileHover={{ scale: 1.2 }}
-              title="Remove"
-            >
-              <FaTrash />
-            </motion.button>
+          <div className="d-flex flex-wrap justify-content-center gap-3">
+            <AnimatePresence>
+              {teamMembers.map((member, index) => (
+                <motion.div
+                  key={member}
+                  className="member-card-wrapper"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.3, delay: index * 0.05 }}
+                >
+                  <div className="card shadow member-card">
+                    <div className="card-body d-flex justify-content-between align-items-center">
+                      <div className="d-flex align-items-center">
+                        <FaUser className="text-primary me-2" size={20} />
+                        <span>{member}</span>
+                      </div>
+                      <motion.button
+                        className="btn btn-sm btn-outline-danger rounded-circle"
+                        onClick={() => removeMember(member)}
+                        whileHover={{ scale: 1.2 }}
+                        title="Remove"
+                      >
+                        <FaTrash />
+                      </motion.button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </div>
-        </div>
-      </motion.div>
-    ))}
-  </AnimatePresence>
-</div>
-
-
-             
 
           {/* Modal */}
           <Modal

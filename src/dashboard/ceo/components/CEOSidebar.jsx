@@ -73,7 +73,7 @@ const CEOSidebar = () => {
         }}
       >
         <Link
-          to="/logout"
+          to="/"
           style={{
             display: "flex",
             alignItems: "center",

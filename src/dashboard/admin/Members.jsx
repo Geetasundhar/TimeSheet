@@ -20,6 +20,7 @@ const Members = () => {
     },
   ]);
 
+  const [searchTerm, setSearchTerm] = useState('');
   const [editingMember, setEditingMember] = useState(null);
 
   const handleDelete = (id) => {
@@ -42,9 +43,28 @@ const Members = () => {
     setEditingMember(null);
   };
 
+  // Filtered members based on search
+  const filteredMembers = members.filter((member) =>
+    Object.values(member).some((value) =>
+      String(value).toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  );
+
   return (
     <div className="container-fluid px-4 py-4">
       <h2 className="fw-bold mb-4 text-primary">Members List</h2>
+
+      {/* 🔍 Search Input */}
+      <div className="mb-3">
+        <input
+          type="text"
+          className="form-control w-100 w-md-50"
+          placeholder="Search members..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ borderRadius: "20px", width: "180px" }}
+        />
+      </div>
 
       <div className="table-responsive shadow-sm rounded">
         <table className="table table-bordered table-hover align-middle bg-white">
@@ -59,7 +79,7 @@ const Members = () => {
             </tr>
           </thead>
           <tbody>
-            {members.map((member) => (
+            {filteredMembers.map((member) => (
               <tr key={member.id}>
                 <td>{member.employeeId}</td>
                 <td>{member.name}</td>
@@ -84,10 +104,10 @@ const Members = () => {
                 </td>
               </tr>
             ))}
-            {members.length === 0 && (
+            {filteredMembers.length === 0 && (
               <tr>
                 <td colSpan="6" className="text-center py-4 text-muted">
-                  No members found.
+                  No matching members found.
                 </td>
               </tr>
             )}
@@ -95,7 +115,7 @@ const Members = () => {
         </table>
       </div>
 
-      {/* Edit Modal */}
+      {/* ✏️ Edit Modal */}
       {editingMember && (
         <div className="modal d-block" tabIndex="-1" role="dialog" style={{ background: 'rgba(0,0,0,0.4)' }}>
           <div className="modal-dialog modal-lg" role="document">
@@ -184,7 +204,7 @@ const Members = () => {
         </div>
       )}
 
-      {/* Inline Styles */}
+      {/* 🔧 Inline Styles */}
       <style>{`
         .table th {
           background-color: #0d6efd !important;

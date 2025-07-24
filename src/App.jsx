@@ -16,9 +16,10 @@ import TotalProject from './dashboard/admin/TotalProject';
 import BillableHours from './dashboard/admin/BillableHours';
 
 // Employee
-import Employee from './dashboard/Employee';
-import EmployeeReports from './dashboard/EmployeeReports';
-import EmployeeTS from './dashboard/EmployeeTS';
+import EmployeeLayout from './dashboard/employee/EmployeeLayout';
+import Employee from './dashboard/employee/Employee';
+import EmployeeTS from './dashboard/employee/EmployeeTS';
+import EmployeeReports from './dashboard/employee/EmployeeReports';    
 // CEO
 import CEOLayout from './dashboard/ceo/CEOLayout';
 import CEODashboard from './dashboard/ceo/pages/CEODashboard';
@@ -46,7 +47,7 @@ import TLsidebar from './dashboard/tl/TLsidebar';
 import TLtopbar from './dashboard/tl/TLtopbar';
 import TLAddProject from './dashboard/tl/TLAddProject';
 
-import FullPageCalendar from './dashboard/Calender';
+
 
 const App = () => {
   return (
@@ -68,11 +69,14 @@ const App = () => {
           <Route path="projects" element={<TotalProject />} />
           <Route path="billable-hours" element={<BillableHours />} />
         </Route>
+        
+        {/*Employee*/}
+        <Route path="/dashboard/Employee" element={<EmployeeLayout />}>
+  <Route index element={<Employee />} />
+  <Route path="timesheet" element={<EmployeeTS />} />
+  <Route path="reports" element={<EmployeeReports />} />
+</Route>
 
-        {/* Employee Route */}
-        <Route path="/dashboard/employee" element={<Employee />} />
-        <Route path="/employee/reports" element={<EmployeeReports />} />
-        <Route path="/dashboard/EmployeeTS" element={<EmployeeTS />} />
 
         {/* CEO Routes */}
         <Route path="/ceo" element={<CEOLayout />}>
@@ -109,7 +113,7 @@ const App = () => {
         <Route path="/tl/add-members" element={<TLAddMembers />} />
         <Route path="/dashboard/tl/addproject" element={<TLAddProject />} />
       </Route>
-        <Route path="/dashboard/Calender" element={<FullPageCalendar />} />
+        
 
         {/* Fallback Route */}
         <Route path="*" element={<NotFound />} />

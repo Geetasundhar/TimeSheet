@@ -13,11 +13,16 @@ const TLdashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [teamMembers, setTeamMembers] = useState([]);
   const [sidebarVisible, setSidebarVisible] = useState(true); // 🔹 toggle state
+const [timesheetData, setTimesheetData] = useState({});
 
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem('tl_team_members')) || [];
     setTeamMembers(stored);
   }, []);
+useEffect(() => {
+  const allData = JSON.parse(localStorage.getItem('timesheet_data')) || {};
+  setTimesheetData(allData);
+}, []);
 
   const summaries = [
     { type: 'daily', icon: <FaCalendarDay size={30} className="text-primary mb-2" />, title: 'Daily Summary', data: '12 hours logged', progress: 60 },
@@ -25,6 +30,60 @@ const TLdashboard = () => {
     { type: 'monthly', icon: <FaCalendarAlt size={30} className="text-warning mb-2" />, title: 'Monthly Summary', data: '220 hours logged', progress: 90 },
     { type: 'yearly', icon: <FaCalendar size={30} className="text-danger mb-2" />, title: 'Yearly Summary', data: '2500 hours logged', progress: 40 },
   ];
+const handleApproveAllTimesheets = () => {
+  const allData = JSON.parse(localStorage.getItem('timesheet_data')) || {};
+  let modified = false;
+
+  for (const emp in allData) {
+    const empEntries = allData[emp];
+
+    for (const date in empEntries) {
+      empEntries[date] = empEntries[date].map(entry => {
+        if (!entry.approved) {
+          modified = true;
+          return { ...entry, approved: true, rejected: false };
+        }
+        return entry;
+      });
+    }
+
+    allData[emp] = empEntries;
+  }
+
+  if (modified) {
+    localStorage.setItem('timesheet_data', JSON.stringify(allData));
+    alert('All pending timesheets approved!');
+  } else {
+    alert('No pending entries to approve.');
+  }
+};
+const handleRejectAllTimesheets = () => {
+  const allData = JSON.parse(localStorage.getItem('timesheet_data')) || {};
+  let modified = false;
+
+  for (const emp in allData) {
+    const empEntries = allData[emp];
+
+    for (const date in empEntries) {
+      empEntries[date] = empEntries[date].map(entry => {
+        if (!entry.rejected && !entry.approved) {
+          modified = true;
+          return { ...entry, rejected: true, approved: false };
+        }
+        return entry;
+      });
+    }
+
+    allData[emp] = empEntries;
+  }
+
+  if (modified) {
+    localStorage.setItem('timesheet_data', JSON.stringify(allData));
+    alert('All pending timesheets rejected!');
+  } else {
+    alert('No pending entries to reject.');
+  }
+};
 
   const handleClick = (type) => setSelectedSummary(type);
 
@@ -95,23 +154,50 @@ const TLdashboard = () => {
         )}
 
         {/* === Pending Tab === */}
-        {activeTab === 'pending' && (
-          <div className="card shadow-sm p-4">
-            <h5 className="fw-semibold mb-3">Pending Timesheets</h5>
-            <p>Review and approve team member timesheets.</p>
-            <Link to="/tl/edit-timesheet" className="btn btn-primary me-2">
-              <FaEdit className="me-1" /> Edit Timesheets
-            </Link>
-            <Link to="/tl/add-members" className="btn btn-outline-primary">
-              <FaUserPlus className="me-1" /> Add Members
-            </Link>
-            <div className="mt-4">
-              <h6>Quick Actions:</h6>
-              <button className="btn btn-sm btn-outline-success me-2"><FaCheck className="me-1" /> Approve All</button>
-              <button className="btn btn-sm btn-outline-danger"><FaTimes className="me-1" /> Reject All</button>
-            </div>
-          </div>
-        )}
+       {activeTab === 'pending' && (
+  <div className="card shadow-sm p-4">
+    <h5 className="fw-semibold mb-3">Pending Timesheets</h5>
+    <p>Review and approve team member timesheets.</p>
+
+    <Link to="/tl/edit-timesheet" className="btn btn-sm btn-primary me-2" style={{ width: '140px' }}>
+      <FaEdit className="me-1" /> Edit
+    </Link>
+    <Link to="/tl/add-members" className="btn btn-sm btn-outline-primary" style={{ width: '140px' }}>
+      <FaUserPlus className="me-1" /> Add
+    </Link>
+
+    <div className="mt-4">
+      <h6>Quick Actions:</h6>
+      <button className="btn btn-sm btn-outline-success me-2" onClick={handleApproveAllTimesheets}>
+        <FaCheck className="me-1" /> Approve All
+      </button>
+      <button className="btn btn-sm btn-outline-danger" onClick={handleRejectAllTimesheets}>
+        <FaTimes className="me-1" /> Reject All
+      </button>
+    </div>
+
+    {/* 🔽 🔽 🔽 ADD THIS BLOCK HERE 🔽 🔽 🔽 */}
+    <div className="mt-4">
+      <h6>Pending Entries:</h6>
+      {Object.entries(timesheetData).map(([employee, empEntries]) => (
+        <div key={employee} className="mb-3">
+          <h6 className="text-primary">{employee}</h6>
+          {Object.entries(empEntries).map(([date, entries]) =>
+            entries
+              .filter(e => !e.approved && !e.rejected)
+              .map((entry, idx) => (
+                <div key={idx} className="border p-2 rounded small bg-light mb-2">
+                  <strong>{date}</strong> — {entry.projectName} → {entry.task} ({entry.hours}h)
+                </div>
+              ))
+          )}
+        </div>
+      ))}
+    </div>
+    {/* 🔼 END OF PENDING LIST BLOCK */}
+  </div>
+)}
+
 
         {/* === Team Tab === */}
         {activeTab === 'team' && (
@@ -141,51 +227,22 @@ const TLdashboard = () => {
         )}
 
         {/* Styles */}
-       <style>{`
-  .summary-card {
-    transition: transform 0.3s ease, background-color 0.3s ease;
-  }
-  .summary-card:hover {
-    background-color: #f9f9f9;
-    transform: scale(1.02);
-  }
-  .summary-card.active-summary {
-    border: 2px solid #007bff;
-    background-color: #f0f8ff;
-  }
-
-  .nav-tabs .nav-link {
-    color: #555;
-    font-weight: 500;
-    transition: background-color 0.2s ease, color 0.2s ease;
-  }
-
-  .nav-tabs .nav-link:hover {
-    background-color: #f2f2f2;
-    color: #000;
-  }
-
-  .nav-tabs .nav-link.active {
-    color: #fff !important;
-    background-color: #007bff !important;
-    font-weight: 600;
-    border: none;
-    border-radius: 4px 4px 0 0;
-  }
-
-  .nav-tabs .nav-item:nth-child(1) .nav-link.active {
-    background-color: #007bff; /* Blue for Overview */
-  }
-
-  .nav-tabs .nav-item:nth-child(2) .nav-link.active {
-    background-color: #28a745; /* Green for Pending */
-  }
-
-  .nav-tabs .nav-item:nth-child(3) .nav-link.active {
-    background-color: #fd7e14; /* Orange for Team */
-  }
-`}</style>
-
+        <style>{`
+          .summary-card {
+            transition: transform 0.3s ease, background-color 0.3s ease;
+          }
+          .summary-card:hover {
+            background-color: #f9f9f9;
+            transform: scale(1.02);
+          }
+          .summary-card.active-summary {
+            border: 2px solid #007bff;
+            background-color: #f0f8ff;
+          }
+          .nav-tabs .nav-link.active {
+            font-weight: 600;
+          }
+        `}</style>
       </div>
     </div></div>
   );

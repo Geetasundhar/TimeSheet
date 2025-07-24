@@ -9,6 +9,10 @@
   top: 0;
   left: 0;
   z-index: 1000;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .sidebar-header {
@@ -47,6 +51,7 @@
   list-style: none;
   padding: 0;
   margin: 0;
+  flex-grow: 1;
 }
 
 .sidebar-nav li {
@@ -67,4 +72,21 @@
 .sidebar-nav a:hover {
   background-color: #546e7a;
   color: #fff;
+}
+
+/* Logout button styling */
+
+.logout-link {
+  border-top: 1px solid #4e5d6c;
+  padding-top: 15px;
+  margin-top: auto;
+  color: #cfd8dc;
+  font-size: 15px;
+  cursor: pointer;
+  text-align: left;
+  transition: color 0.2s;
+}
+
+.logout-link:hover {
+  color: #ffffff;
 }

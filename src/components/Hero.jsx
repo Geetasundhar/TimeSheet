@@ -93,9 +93,6 @@ padding: '20px',
 textAlign: 'center',
 }}
 >
-<h2>Key Features</h2>
-<p>Some quick features of our HR management system.</p>
-{/* Add features here */}
 </section>
 </main>
 

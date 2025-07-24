@@ -98,6 +98,8 @@ const App = () => {
           <Route path="all-entries" element={<AllEntries />} />
           <Route path="employee-logs" element={<EmployeeLogs />} />
 
+          <Route path="employee-reports" element={<EmployeeReports />} />
+
         </Route>
 
         {/*team lead route */}

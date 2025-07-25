@@ -1,9 +1,10 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaUserCircle, FaSignOutAlt } from "react-icons/fa";
 
 const CEOSidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const ceoEmail = "ceo@company.com";
 
   const navItem = (path, label) => (
@@ -15,8 +16,8 @@ const CEOSidebar = () => {
   const navStyle = (active) => ({
     display: "block",
     padding: "12px 20px",
-    color: active ? "#ffffff" : "#bdc3c7", // Active white, muted text for others
-    backgroundColor: active ? "#34495E" : "transparent", // Subtle highlight
+    color: active ? "#ffffff" : "#bdc3c7",
+    backgroundColor: active ? "#34495E" : "transparent",
     textDecoration: "none",
     fontWeight: "500",
     borderRadius: "6px",
@@ -24,16 +25,22 @@ const CEOSidebar = () => {
     transition: "all 0.3s ease",
   });
 
+  const handleLogout = () => {
+    // Optional: clear auth token or session
+    // localStorage.removeItem("ceoToken");
+    navigate("/"); // Redirect to Home Page
+  };
+
   return (
     <div
       style={{
         width: "250px",
-        backgroundColor: "#2C3E50", // ✅ Muted Navy - corporate & professional
+        backgroundColor: "#2C3E50",
         minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        color: "#ECF0F1", // Light muted text
+        color: "#ECF0F1",
         boxShadow: "2px 0 8px rgba(0, 0, 0, 0.1)",
       }}
     >
@@ -62,6 +69,9 @@ const CEOSidebar = () => {
           {navItem("/ceo/employee-logs", "Employee Logs")}
           {navItem("/ceo/team-reports", "Team Reports")}
           {navItem("/ceo/all-entries", "All Entries")}
+          {navItem("/ceo/employee-reports", "Employee Reports")}
+
+
         </nav>
       </div>
 
@@ -70,23 +80,18 @@ const CEOSidebar = () => {
         style={{
           padding: "20px",
           borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+          color: "#ECF0F1",
+          fontWeight: "500",
+          fontSize: "14px",
         }}
+        onClick={handleLogout}
       >
-        <Link
-          to="/logout"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            color: "#ECF0F1",
-            textDecoration: "none",
-            fontWeight: "500",
-            gap: "10px",
-            fontSize: "14px",
-          }}
-        >
-          <FaSignOutAlt size={18} />
-          Logout
-        </Link>
+        <FaSignOutAlt size={18} />
+        Logout
       </div>
     </div>
   );

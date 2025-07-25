@@ -105,8 +105,8 @@ const App = () => {
           <Route path="all-entries" element={<AllEntries />} />
           <Route path="employee-logs" element={<EmployeeLogs />} />
 
+          {/* ✅ Employee content rendered inside HR layout */}
           <Route path="employee-reports" element={<EmployeeReports />} />
-
         </Route>
 
         {/*team lead route */}

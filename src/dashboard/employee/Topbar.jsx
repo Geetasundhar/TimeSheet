@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const Topbar = ({ employeePhoto }) => {
+const Topbar = ({ employeePhoto, onToggleSidebar }) => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [formData, setFormData] = useState({
@@ -40,10 +40,11 @@ const Topbar = ({ employeePhoto }) => {
   return (
     <>
       <div className="d-flex justify-content-between align-items-center px-4 py-2 shadow-sm bg-white sticky-top" style={{ zIndex: 999 }}>
-        <button className="btn btn-outline-primary">
+        <button className="btn btn-outline-primary" onClick={onToggleSidebar}>
           <i className="bi bi-list"></i>
         </button>
-        <h5 className="mb-0 text-primary">Timesheet Calendar</h5>
+
+        <h5 className="mb-0 text-primary">Employee Dashboard</h5>
 
         <div className="position-relative" ref={dropdownRef}>
           <img

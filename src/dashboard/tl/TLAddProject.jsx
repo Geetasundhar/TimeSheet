@@ -16,6 +16,15 @@ const TLAddProject = () => {
   const [editIndex, setEditIndex] = useState(null);
   const [teamMembers, setTeamMembers] = useState([]);
   const [selectedMembers, setSelectedMembers] = useState([]);
+const [projectType, setProjectType] = useState('Billable');
+const [phases, setPhases] = useState([]);
+const [phaseInput, setPhaseInput] = useState('');
+const [selectedProject, setSelectedProject] = useState(null);
+const [selectedPhase, setSelectedPhase] = useState('');
+const [selectedTask, setSelectedTask] = useState('');
+
+const [tasks, setTasks] = useState([]);
+const [taskInput, setTaskInput] = useState('');
 
   useEffect(() => {
     const storedProjects = JSON.parse(localStorage.getItem('projects')) || [];
@@ -35,39 +44,47 @@ const TLAddProject = () => {
     setEditIndex(null);
     setSelectedMembers([]);
   };
+const handleSubmit = (e) => {
+  e.preventDefault();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!projectName || !startDate || !endDate) {
-      toast.error('Please fill in all required fields');
-      return;
-    }
+  if (!projectName || !startDate || !endDate || !description) {
+    toast.error('Please fill in all required fields');
+    return;
+  }
 
-    const newProject = {
-      projectName,
-      description,
-      status,
-      startDate,
-      endDate,
-      completedDate: completedDate || '',
-      assignedMembers: selectedMembers,
-    };
-
-    let updatedProjects;
-
-    if (editIndex !== null) {
-      updatedProjects = [...projects];
-      updatedProjects[editIndex] = newProject;
-      toast.success('Project updated successfully!');
-    } else {
-      updatedProjects = [...projects, newProject];
-      toast.success('Project added successfully!');
-    }
-
-    localStorage.setItem('projects', JSON.stringify(updatedProjects));
-    setProjects(updatedProjects);
-    resetForm();
+  const newProject = {
+    projectName,
+    description,
+    status,
+    startDate,
+    endDate,
+    completedDate: completedDate || '',
+    assignedMembers: selectedMembers,
+    projectType,
+    phases,
+    tasks
   };
+
+  let updatedProjects;
+
+  if (editIndex !== null) {
+    updatedProjects = [...projects];
+    updatedProjects[editIndex] = newProject;
+    toast.success('Project updated successfully!');
+  } else {
+    updatedProjects = [...projects, newProject];
+    toast.success('Project added successfully!');
+  }
+
+  localStorage.setItem('projects', JSON.stringify(updatedProjects));
+  setProjects(updatedProjects);
+  resetForm();
+};
+
+
+   
+
+   
 
   const handleEdit = (index) => {
     const proj = projects[index];
@@ -305,6 +322,83 @@ button:hover {
                   onChange={(e) => setProjectName(e.target.value)}
                 />
               </div>
+<div className="mb-3">
+  <label className="form-label">Project Type</label>
+  <select className="form-select" value={projectType} onChange={(e) => setProjectType(e.target.value)}>
+    <option value="Billable">Billable</option>
+    <option value="Internal">Internal</option>
+  </select>
+</div>
+
+<div className="mb-3">
+  <label className="form-label">Add Project Phases</label>
+  <div className="d-flex">
+    <input
+      type="text"
+      className="form-control me-2"
+      value={phaseInput}
+      onChange={(e) => setPhaseInput(e.target.value)}
+      placeholder="e.g., Development"
+    />
+    <button className="btn btn-outline-primary" onClick={() => {
+      if (phaseInput.trim() !== '') {
+        setPhases([...phases, phaseInput]);
+        setPhaseInput('');
+      }
+    }}>
+      Add
+    </button>
+  </div>
+  <ul className="mt-2">
+    {phases.map((phase, index) => <li key={index}>{phase}</li>)}
+  </ul>
+</div>
+
+<div className="mb-3">
+  <label className="form-label">Add Project Tasks</label>
+  <div className="d-flex mb-2">
+    <input
+      type="text"
+      className="form-control me-2"
+      value={taskInput}
+      onChange={(e) => setTaskInput(e.target.value)}
+      placeholder="e.g., API Integration"
+    />
+    <button
+      type="button"
+      className="btn btn-outline-success"
+      onClick={() => {
+        if (taskInput.trim() !== '') {
+          setTasks([...tasks, { name: taskInput, assignedTo: [] }]);
+          setTaskInput('');
+        }
+      }}
+    >
+      Add
+    </button>
+  </div>
+  {tasks.map((task, index) => (
+    <div key={index} className="mb-2">
+      <strong>{task.name}</strong>
+      <select
+        className="form-control mt-1"
+        multiple
+        value={task.assignedTo}
+        onChange={(e) => {
+          const selectedOptions = Array.from(e.target.selectedOptions, opt => opt.value);
+          const updatedTasks = [...tasks];
+          updatedTasks[index].assignedTo = selectedOptions;
+          setTasks(updatedTasks);
+        }}
+      >
+        {teamMembers.map((member, idx) => (
+          <option key={idx} value={member}>{member}</option>
+        ))}
+      </select>
+      <small className="text-muted">Assign members (Ctrl/Cmd + Click for multiple)</small>
+    </div>
+  ))}
+</div>
 
               <div className="mb-3">
                 <label className="form-label">Description</label>
@@ -408,6 +502,8 @@ button:hover {
                   <tr>
                     <th>Name</th>
                     <th>Status</th>
+                          <th>Tasks</th>
+
                     <th>Start</th>
                     <th>End</th>
                     <th>Completed</th>
@@ -423,6 +519,22 @@ button:hover {
     key={index}>
                       <td>{proj.projectName}</td>
                       <td>{proj.status}</td>
+                      
+<td>
+  {proj.tasks && proj.tasks.length > 0 ? (
+    <ul className="mb-0">
+      {proj.tasks.map((task, i) => (
+        <li key={i}>
+          {task.name} ({task.assignedTo?.join(', ') || 'No one'})
+        </li>
+      ))}
+    </ul>
+  ) : (
+    '-'
+  )}
+</td>
+
+
                       <td>{proj.startDate}</td>
                       <td>{proj.endDate}</td>
                       <td>{proj.completedDate || '-'}</td>

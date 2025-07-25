@@ -85,6 +85,9 @@ const App = () => {
           <Route path="employee-logs" element={<EmployeeLogs />} />
           <Route path="team-reports" element={<TeamReports />} />
           <Route path="all-entries" element={<AllEntries />} />
+          <Route path="employee-reports" element={<EmployeeReports />} />
+
+
           <Route path="*" element={<h2>404 - CEO Page Not Found</h2>} />
         </Route>
 
@@ -102,8 +105,8 @@ const App = () => {
           <Route path="all-entries" element={<AllEntries />} />
           <Route path="employee-logs" element={<EmployeeLogs />} />
 
+          {/* ✅ Employee content rendered inside HR layout */}
           <Route path="employee-reports" element={<EmployeeReports />} />
-
         </Route>
 
         {/*team lead route */}

@@ -1,972 +1,960 @@
-// TimesheetCalendar.jsx
-import React, { useState, useEffect, useMemo } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { FaRegStickyNote } from 'react-icons/fa';
-import * as XLSX from 'xlsx';
-import { Bar, Pie } from 'react-chartjs-2';
-import styled from 'styled-components';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  ArcElement,
-  Title,
-  Tooltip,
-  Legend
-} from 'chart.js';
+import React, { useState, useEffect } from 'react';
 import TLsidebar from './TLsidebar';
 import TLtopbar from './TLtopbar';
-ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
+export default function TLEditTimesheet() {
+  const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(null);
+  const currentUser = localStorage.getItem('currentUser'); // or however you're storing the logged-in user
 
-const times = [
-  '7:00 AM','7:30 AM','8:00 AM','8:30 AM','9:00 AM','9:30 AM',
-  '10:00 AM','10:30 AM','11:00 AM','11:30 AM','12:00 PM','12:30 PM',
-  '1:00 PM','1:30 PM','2:00 PM','2:30 PM','3:00 PM','3:30 PM',
-  '4:00 PM','4:30 PM','5:00 PM','5:30 PM','6:00 PM','6:30 PM','7:00 PM'
-];
-const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-
-const generateInitialData = (rows, cols) =>
-  Array.from({ length: rows }, () =>
-    Array(cols).fill({
-      status: '',
-      description: '',
-      project: '',
-      isProjectStart: false,
-      isProjectEnd: false
-    })
-  );
-
-
-const calculateWeeklySummary = (data) => {
-  const cols = data[0]?.length || 0;
-  return Array(cols).fill().map((_, colIdx) => {
-    let IN = 0, OUT = 0, LEAVE = 0, ONDUTY = 0;
-    for (let r = 0; r < data.length; r++) {
-      const s = data[r][colIdx].status;
-      if (s === 'IN') IN++;
-      else if (s === 'OUT') OUT++;
-      else if (s === 'LEAVE') LEAVE++;
-      else if (s === 'ONDUTY') ONDUTY++;
-    }
-    return { IN, OUT, LEAVE, ONDUTY, totalHours: IN * 0.5 };
+  const [formVisible, setFormVisible] = useState(false);
+  const [monthYearSelectVisible, setMonthYearSelectVisible] = useState(false);
+  const [projectData, setProjectData] = useState(() => {
+    const saved = localStorage.getItem('projectData');
+    return saved ? JSON.parse(saved) : [];
   });
-};
-const calculateYearlySummary = (dataMap, year, hourlyRate) => {
-  const monthlyData = Array(12).fill().map(() => ({
-    projects: {},  // { projectName: totalHours }
-    regularHours: 0,
-    overtimeHours: 0,
-    lateHours: 0,
-    totalHours: 0,
-    monthlyPay: 0
-  }));
-
-  Object.entries(dataMap).forEach(([key, weekData]) => {
-    const [yStr, mStr] = key.split('-');
-    const y = parseInt(yStr);
-    const m = parseInt(mStr) - 1;
-    if (y !== year) return;
-
-    const dailyHours = Array(7).fill(0); // for 7 days
-    const weekTotals = { totalHours: 0, lateHours: 0 };
-
-    for (let c = 0; c < weekData[0].length; c++) {
-      for (let r = 0; r < weekData.length; r++) {
-        const cell = weekData[r][c];
-        if (!cell) continue;
-        const { status, project } = cell;
-
-        if ((status === 'IN' || status === 'OUT') && project) {
-          monthlyData[m].projects[project] = (monthlyData[m].projects[project] || 0) + 0.5;
-          dailyHours[c] += 0.5;
-          weekTotals.totalHours += 0.5;
-
-          // Late hours logic: after 6:00 PM index (18 = 6:00 PM)
-          if (status === 'OUT' && r >= 18) {
-            weekTotals.lateHours += 0.5;
-          }
-        }
-      }
-    }
-
-    monthlyData[m].lateHours += weekTotals.lateHours;
-    monthlyData[m].totalHours += weekTotals.totalHours;
-
-    // Regular vs Overtime calculation (weekly basis)
-    const regular = Math.min(40, weekTotals.totalHours);
-    const overtime = Math.max(0, weekTotals.totalHours - 40);
-    monthlyData[m].regularHours += regular;
-    monthlyData[m].overtimeHours += overtime;
+  const [formData, setFormData] = useState({
+    projectType: '',
+    projectName: '',
+    phase: '',
+    task: '',
+    hours: '',
+    description: '',
+    isEditing: false,
+    editIndex: null
   });
+  const [entries, setEntries] = useState({});
+const selectedProject = projectData.find(p => p.projectName === formData.projectName);
 
-  monthlyData.forEach(month => {
-    month.monthlyPay = month.totalHours * hourlyRate;
-  });
-
-  return monthlyData;
-};
-
-
-const aggregateYearlyProjects = (dataMap, year) => {
-  const projectTotals = {};
-  Object.entries(dataMap).forEach(([key, weekData]) => {
-    const [yStr, mStr] = key.split('-');
-    const y = parseInt(yStr);
-    if (y !== year) return;
-
-    for (let c = 0; c < weekData[0].length; c++) {
-      for (let r = 0; r < weekData.length; r++) {
-        const cell = weekData[r][c];
-        if ((cell.status === 'IN' || cell.status === 'OUT') && cell.project) {
-          projectTotals[cell.project] = (projectTotals[cell.project] || 0) + 0.5;
-        }
-      }
-    }
-  });
-  return projectTotals;
-};
-
-export default function TimesheetCalendar() {
-    const [sidebarOpen, setSidebarOpen] = useState(true); // ✅ inside component
-
-  const today = new Date();
-  const [month, setMonth] = useState(today.getMonth());
-  const [year, setYear] = useState(today.getFullYear());
-  const [viewMode, setViewMode] = useState('WEEKLY'); 
-  const [weeks, setWeeks] = useState([]);
-  const [selectedWeekIdx, setSelectedWeekIdx] = useState(null);
-  const [dataMap, setDataMap] = useState({});
-  const [data, setData] = useState([]);
-  const [editingCell, setEditingCell] = useState(null);
-const [selectedEmployee, setSelectedEmployee] = useState('');
+  const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+  const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+  const startDay = startOfMonth.getDay() || 7;
+  const totalDays = endOfMonth.getDate();
 const [teamMembers, setTeamMembers] = useState([]);
+const [selectedEmployee, setSelectedEmployee] = useState('');
+const [calendarVisible, setCalendarVisible] = useState(true);
+const [timesheetData, setTimesheetData] = useState([]);
+const [sidebarOpen, setSidebarOpen] = useState(true);
+const toggleSidebar = () => setSidebarOpen(prev => !prev);
+  const [sidebarVisible, setSidebarVisible] = useState(true); // 🔹 toggle state
+const [setSelectedProject] = useState('');
+const [availableTasks, setAvailableTasks] = useState([]);
+const [selectedTask, setSelectedTask] = useState('');
 
- useEffect(() => {
-  if (!selectedEmployee) return;
-  const saved = localStorage.getItem(`timesheetDataMap_${selectedEmployee}`);
-  if (saved) setDataMap(JSON.parse(saved));
-  else setDataMap({});
+// Load project data from localStorage
+useEffect(() => {
+  const storedProjects = JSON.parse(localStorage.getItem('projects')) || [];
+  setProjectData(storedProjects);
+}, []);
+
+// Update tasks when a project is selected
+const handleProjectChange = (e) => {
+  const selectedIndex = parseInt(e.target.value);
+  const selected = projectData[selectedIndex];
+  setSelectedProject(selectedIndex);
+  setAvailableTasks(selected?.tasks || []);
+  setSelectedTask('');
+};
+
+useEffect(() => {
+  const storedMembers = JSON.parse(localStorage.getItem('tl_team_members')) || [];
+  setTeamMembers(storedMembers);
+}, []);
+
+useEffect(() => {
+  const storedData = JSON.parse(localStorage.getItem('timesheet_data')) || {};
+  const employeeData = selectedEmployee ? storedData[selectedEmployee] || {} : {};
+  setEntries(employeeData); // Set current entries for the selected employee
 }, [selectedEmployee]);
+
+const saveEntriesToStorage = (newEntries) => {
+  const allData = JSON.parse(localStorage.getItem('timesheet_data')) || {};
+  if (selectedEmployee) {
+    allData[selectedEmployee] = newEntries;
+    localStorage.setItem('timesheet_data', JSON.stringify(allData));
+  }
+};
+
 
 useEffect(() => {
   const stored = JSON.parse(localStorage.getItem('tl_team_members')) || [];
   setTeamMembers(stored);
-  if (stored.length > 0) {
-    setSelectedEmployee(stored[0]); // default to first employee
-  }
 }, []);
 
-  useEffect(() => {
-    const days = [];
-    const d = new Date(year, month, 1);
-    while (d.getMonth() === month) {
-      days.push(new Date(d));
-      d.setDate(d.getDate() + 1);
-    }
-    const grouped = [];
-    let week = Array(7).fill(null);
-    days.forEach(day => {
-      week[day.getDay()] = day;
-      if (day.getDay() === 6) {
-        grouped.push(week);
-        week = Array(7).fill(null);
-      }
+  const handlePrev = () => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+  };
+
+  const handleNext = () => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+  };
+
+ const handleDateClick = (day) => {
+  const dateKey = day.toDateString();
+  const dayEntries = entries[dateKey] || [];
+
+  setSelectedDate(day);
+ if (!selectedEmployee) {
+    alert("Please select an employee first.");
+    return;
+  }
+setSelectedDate(day); // ✅ correct
+  setFormVisible(true);
+  if (dayEntries.length === 1) {
+    // Only one entry exists — auto-fill form with it
+    setFormData({
+      ...dayEntries[0],
+      isEditing: true,
+      editIndex: 0
     });
-    if (week.some(d => d)) grouped.push(week);
-    setWeeks(grouped);
-    setSelectedWeekIdx(null);
-  }, [month, year]);
-
-  useEffect(() => {
-    if (selectedWeekIdx !== null) {
-      const key = `${year}-${month + 1}-W${selectedWeekIdx}`;
-      const validDays = weeks[selectedWeekIdx].filter(d => d && d.getMonth() === month);
-      const cols = validDays.length;
-      setData(dataMap[key] || generateInitialData(times.length, cols));
-    }
-  }, [selectedWeekIdx, dataMap, weeks, month, year]);
-
-  const toggleStatus = (r, c) => {
-    const current = data[r][c]?.status;
-    const next = current === '' ? 'IN' :
-                 current === 'IN' ? 'OUT' :
-                 current === 'OUT' ? 'LEAVE' :
-                 current === 'LEAVE' ? 'ONDUTY' : '';
-    const copy = data.map(row => row.slice());
-    copy[r][c] = { ...copy[r][c], status: next };
-    setData(copy);
-  };
-
-  const updateDesc = (r, c, v) => {
-    const copy = data.map(row => row.slice());
-    copy[r][c].description = v;
-    setData(copy);
-  };
-
-  const save = () => {
-    const key = `${year}-${month + 1}-W${selectedWeekIdx}`;
-    const updated = { ...dataMap, [key]: data };
-    setDataMap(updated);
-if (!selectedEmployee) return;
-localStorage.setItem(`timesheetDataMap_${selectedEmployee}`, JSON.stringify(updatedDataMap));
-    toast.success('Saved!');
-  };
-
-  const exportToExcel = () => {
-    const rows = [];
-    Object.entries(dataMap).forEach(([key, weekData]) => {
-      const [y, m, wk] = key.split('-');
-      for (let c = 0; c < weekData[0].length; c++) {
-        for (let r = 0; r < weekData.length; r++) {
-          const cell = weekData[r][c];
-         rows.push({
-  Year: y,
-  Month: m,
-  Week: wk,
-  Time: times[r],
-  DayIndex: c + 1,
-  Status: cell.status,
-  Description: cell.description,
-  Project: cell.project,
-  IsStart: cell.isProjectStart,
-  IsEnd: cell.isProjectEnd
-});
-
-        }
-      }
+  } else {
+    // No entry or multiple — start fresh
+    setFormData({
+      projectType: '',
+      projectName: '',
+      phase: '',
+      task: '',
+      hours: '',
+      description: '',
+      isEditing: false,
+      editIndex: null
     });
-    const ws = XLSX.utils.json_to_sheet(rows);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Timesheet');
-XLSX.writeFile(wb, `Timesheet_${selectedEmployee}_${year}_${month + 1}.xlsx`);
-  };
+  }
 
-  const summary = calculateWeeklySummary(data);
-  const valid = weeks[selectedWeekIdx]?.filter(d => d && d.getMonth() === month) || [];
-  const totalHoursWorked = summary.reduce((sum, s) => sum + s.totalHours, 0);
-
-  const barChartData = {
-    labels: valid.map(d => `${weekdays[d.getDay()]} ${d.getDate()}`),
-    datasets: [{
-      label: 'Worked Hours',
-      data: summary.map(s => s.totalHours),
-      backgroundColor: 'rgba(54, 162, 235, 0.6)'
-    }]
-  };
-  const pieChartData = {
-    labels: ['IN','OUT','LEAVE','ONDUTY'],
-    datasets: [{
-      data: summary.reduce((acc, s) => {
-        acc[0] += s.IN;
-        acc[1] += s.OUT;
-        acc[2] += s.LEAVE;
-        acc[3] += s.ONDUTY;
-        return acc;
-      }, [0,0,0,0]),
-      backgroundColor: ['#28a745','#dc3545','#ffc107','#17a2b8']
-    }]
-  };
-
-  const monthlySummary = useMemo(() => {
-    const ms = Array(7).fill().map(() => ({ IN:0, OUT:0, LEAVE:0, ONDUTY:0, totalHours:0 }));
-    Object.keys(dataMap).forEach(key => {
-      const [y,m] = key.split('-').map(Number);
-      if (viewMode==='MONTHLY' && y===year && m===month+1) {
-        const weekData = dataMap[key];
-        weekData[0].forEach((_,c) => {
-          let IN=0,OUT=0,LEAVE=0,ONDUTY=0;
-          weekData.forEach(row => {
-            const s = row[c].status;
-            if (s==='IN') IN++;
-            else if (s==='OUT') OUT++;
-            else if (s==='LEAVE') LEAVE++;
-            else if (s==='ONDUTY') ONDUTY++;
-          });
-          const wd = c % 7;
-          ms[wd].IN += IN;
-          ms[wd].OUT += OUT;
-          ms[wd].LEAVE += LEAVE;
-          ms[wd].ONDUTY += ONDUTY;
-          ms[wd].totalHours += IN * 0.5;
-        });
-      }
-    });
-    return ms;
-  }, [dataMap, viewMode, month, year]);
-
-  const monthlyBarData = {
-    labels: weekdays,
-    datasets:[{
-      label:'Monthly Worked Hours',
-      data: monthlySummary.map(d => d.totalHours),
-      backgroundColor:'rgba(75,192,192,0.6)'
-    }]
-  };
-  const monthlyPieData = {
-  labels: ['IN', 'OUT', 'LEAVE', 'ONDUTY'],
-  datasets: [{
-    data: monthlySummary.reduce((acc, d) => {
-      acc[0] += d.IN;
-      acc[1] += d.OUT;
-      acc[2] += d.LEAVE;
-      acc[3] += d.ONDUTY;
-      return acc;
-    }, [0, 0, 0, 0]),
-    backgroundColor: ['#28a745', '#dc3545', '#ffc107', '#17a2b8']
-  }]
+  setFormVisible(true);
 };
 
 
-  const chartOptions = {
-    responsive: true,
-    plugins: { legend:{ position:'top' }, title:{ display:true, text:'' } }
+  const handleCancel = () => {
+    setFormVisible(false);
+    setSelectedDate(null);
+    setFormData({
+      projectType: '',
+      projectName: '',
+      phase: '',
+      task: '',
+      hours: '',
+      description: '',
+      isEditing: false,
+      editIndex: null
+    });
+  };
+const handleReject = (dateKey, index) => {
+  setEntries((prev) => {
+    const updated = { ...prev };
+    updated[dateKey][index].rejected = true;
+      saveEntriesToStorage(updated);  // <-- Add this
+
+    return updated;
+  });
+};
+
+  const handleAddOrUpdate = () => {
+    if (!formData.projectType || !formData.projectName || !formData.phase || !formData.task || !formData.hours) return;
+
+    const dateKey = selectedDate.toDateString();
+    const newEntry = {
+      ...formData,
+      approved: false
+    };
+
+    setEntries((prev) => {
+      const updated = { ...prev };
+      const dayEntries = updated[dateKey] || [];
+
+     if (formData.isEditing && formData.editIndex !== null) {
+  dayEntries[formData.editIndex] = newEntry;
+} else {
+  const hourExists = dayEntries.some(entry => entry.hours === formData.hours);
+  if (hourExists) {
+    alert('An entry for this hour already exists on this day.');
+    return;
+  }
+  dayEntries.push(newEntry);
+}
+
+      updated[dateKey] = dayEntries;
+        saveEntriesToStorage(updated);  // <-- Add this
+
+      return updated;
+    });  // <-- Add this
+
+
+    handleCancel();
   };
 
-  const renderWeekGrid = () => (
-    <div className="row mb-3">
-      {weeks.map((wk, idx) => {
-        const valid = wk.filter(d => d && d.getMonth() === month);
-        if (!valid.length) return null;
-        const from = valid[0].getDate(), to = valid[valid.length-1].getDate();
-        return (
-          <div className="col-6 col-md-4 col-lg-3 mb-2" key={idx}>
-            <div
-              className={`card p-2 text-center ${selectedWeekIdx === idx ? 'bg-primary text-white' : ''}`}
-              style={{ cursor: 'pointer' }}
-              onClick={() => setSelectedWeekIdx(idx)}
-            >
-              <small>{months[month]} {from}–{to}, {year}</small>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
+  const handleEdit = (dateKey, index) => {
+    const entry = entries[dateKey][index];
+    if (entry.approved) return;
 
-  const renderTimesheetTable = () => {
-    if (selectedWeekIdx === null) return null;
-    if (!valid.length || !data.length || data[0].length !== valid.length) return null;
-    return (
-      <>
-        <div className="table-responsive">
-          <table className="table table-bordered text-center">
-            <thead className="table-light">
-              <tr>
-                <th>Time</th>
-                {valid.map((d,i)=><th key={i}>{weekdays[d.getDay()]} {d.getDate()}</th>)}
-              </tr>
-            </thead>
-            <tbody>
-              {times.map((t,rIdx)=>(
-                <tr key={rIdx}>
-                  <td>{t}</td>
-                  {valid.map((_,cIdx)=>{
-                    const cell = data[rIdx][cIdx];
-                    const cls = cell.status === 'OUT' ? 'bg-danger text-white' :
-                                cell.status === 'LEAVE' ? 'bg-warning' :
-                                cell.status === 'ONDUTY' ? 'bg-info text-white' :
-                                cell.status === 'IN' ? 'bg-success text-white' : '';
-                    return (
-                      <td key={cIdx} className={cls} title={cell.description}>
-  <div onClick={() => toggleStatus(rIdx, cIdx)} style={{ cursor: 'pointer' }}>
-    {cell.status || 'Mark'}
+    setSelectedDate(new Date(dateKey));
+    setFormData({
+      ...entry,
+      isEditing: true,
+      editIndex: index
+    });
+    setFormVisible(true);
+  };
+const handleApproveAll = () => {
+  const dateKey = selectedDate?.toDateString();
+  if (!dateKey || !entries[dateKey]) return;
 
-    { cell.isProjectStart && (
-      <span className="badge bg-primary ms-1">Start</span>
-    )}
-    {cell.isProjectEnd && (
-      <span className="badge bg-dark ms-1">End</span>
-    )}
-    {cell.project && (
-      <div className="small text-muted mt-1">{cell.project}</div>
+  setEntries(prev => {
+    const updated = { ...prev };
+    updated[dateKey] = updated[dateKey].map(entry => ({
+  ...entry,
+  approved: true,
+  rejected: false  // ✅ Remove rejection when approving all
+}));  saveEntriesToStorage(updated);  // <-- Add this
+
+
+    return updated;
+  });
+   // <-- Add this
+
+  handleCancel(); // ✅ This line closes the form and refreshes the calendar
+};
+
+const handleApprove = (dateKey, index) => {
+  setEntries((prev) => {
+    const updated = { ...prev };
+    updated[dateKey][index] = {
+      ...updated[dateKey][index],
+      approved: true,
+      rejected: false  // ✅ Remove rejection when approving
+    };  saveEntriesToStorage(updated);  // <-- Add this
+
+    return updated;
+  });
+};
+useEffect(() => {
+  const stored = JSON.parse(localStorage.getItem('projects')) || [];
+  const normalized = stored.map(p => ({
+    ...p,
+    projectPhases: p.projectPhases || p.phases || [],
+    tasks: (p.tasks || []).map(t => ({
+      taskName: t.taskName || t.name,
+      assignedTo: t.assignedTo || []
+    }))
+  }));
+  setProjectData(normalized);
+}, []);
+
+
+  const handleMonthYearChange = () => {
+    const newMonth = parseInt(document.getElementById("monthSelect").value);
+    const newYear = parseInt(document.getElementById("yearSelect").value);
+    setCurrentDate(new Date(newYear, newMonth, 1));
+    setMonthYearSelectVisible(false);
+  };
+
+  const renderCalendar = () => {
+    const boxes = [];
+    for (let i = 1; i < startDay; i++) {
+      boxes.push(<div key={`empty-${i}`} className="calendar-box empty" />);
+    }
+    for (let day = 1; day <= totalDays; day++) {
+      const dateObj = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+      const dateKey = dateObj.toDateString();
+      const isSelected = selectedDate && dateKey === selectedDate.toDateString();
+
+      boxes.push(
+        <div
+          key={day}
+          className={`calendar-box ${isSelected ? 'selected' : ''}`}
+          onClick={() => handleDateClick(dateObj)}
+        >
+          <div className="day-number">{day}</div>
+          {entries[dateKey] && (
+            <div className="entry">
+              {entries[dateKey].map((entry, idx) => (
+  <div key={idx} className={`entry-item ${entry.rejected ? 'rejected' : ''}`}>
+    <p><strong>{entry.projectType}</strong> - {entry.projectName}</p>
+    <p>{entry.phase} - {entry.task} - {entry.hours} hr</p>
+    <p>Description: {entry.description}</p>
+    
+    {entry.approved ? (
+      <div>Status: Approved</div>
+    ) : entry.rejected ? (
+      <div>Status: Rejected</div>
+    ) : (
+      <div>
+        <button onClick={() => handleEdit(dateKey, idx)}>Edit</button>
+        <button onClick={() => handleApprove(dateKey, idx)}>Approve</button>
+        <button onClick={() => handleReject(dateKey, idx)}>Reject</button>
+      </div>
     )}
   </div>
-<style>
-  {`/* ---------- Global Styles ---------- */
-body {
-  background: linear-gradient(180deg, #e6f0ff 0%, #ffffff 100%);
-  font-family: 'Segoe UI', sans-serif;
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden;
-}
+))}
 
-.container {
-  background-color: #ffffff;
-  border-radius: 12px;
-  padding:50px;
-  box-shadow: 0 10px 30px rgba(0, 123, 255, 0.1);
-  animation: fadeSlideIn 0.8s ease;
-}
-
-/* ---------- Animations ---------- */
-@keyframes fadeSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(25px);
+            </div>
+          )}
+        </div>
+      );
+    }
+    return boxes;
+  };
+  const formFields = [
+  {
+    label: 'Project Type',
+    key: 'projectType',
+    options: Array.isArray(projectData)
+      ? [...new Set(projectData.map(p => p.projectType).filter(Boolean))]
+      : [],
+  },
+  {
+    label: 'Project Name',
+    key: 'projectName',
+    options: Array.isArray(projectData)
+      ? [...new Set(projectData.map(p => p.projectName).filter(Boolean))]
+      : [],
+  },
+  {
+    label: 'Phase',
+    key: 'phase',
+    options: Array.isArray(projectData)
+      ? [...new Set(projectData.flatMap(p => p.projectPhases || []))]
+      : [],
+  },
+  {
+    label: 'Task',
+    key: 'task',
+    options: Array.isArray(projectData)
+      ? [...new Set(
+          projectData.flatMap(p =>
+            Array.isArray(p.tasks)
+              ? p.tasks.map(t => t.taskName).filter(Boolean)
+              : []
+          )
+        )]
+      : [],
   }
+];
+
+
+  return (
+  <>
+    <div style={{ display: 'flex' }}>
+      {sidebarVisible && <TLsidebar />} {/* 🔹 Conditionally render sidebar */}
+<div
+  className="flex-grow-1"
+  style={{
+    marginLeft: sidebarVisible && window.innerWidth >= 992 ? '220px' : '0',
+    padding: 0,
+    transition: 'margin-left 0.3s ease',
+  }}
+>
+        <TLtopbar onToggle={() => setSidebarVisible(!sidebarVisible)} /> {/* 🔹 Toggle callback */}
+<br></br>    {/* 🟦 Header Section */}
+        <div className="header-container">
+  <div className="header-title">
+    <h1>Timesheet Approval</h1><br></br>
+  </div>
+
+  <div className="header-controls">
+    <select
+      value={selectedEmployee}
+      onChange={(e) => setSelectedEmployee(e.target.value)}
+    >
+      <option value="">Select Employee</option>
+      {teamMembers.map((member, index) => (
+        <option key={index} value={member}>
+          {member}
+        </option>
+      ))}
+    </select>
+
+   
+  </div>
+</div>
+
+        <div className="container">
+
+       
+<div className="calendar-box-wrapper"><br></br>
+        <div className="calendar-header">
+  <button onClick={handlePrev}>&lt;</button>
+  <h2 onClick={() => setMonthYearSelectVisible(!monthYearSelectVisible)}>
+    {currentDate.toLocaleString('default', { month: 'long' })} {currentDate.getFullYear()}
+  </h2>
+  <button onClick={handleNext}>&gt;</button>
+</div>
+
+
+
+
+        {monthYearSelectVisible && (
+          <div className="month-year-picker">
+            <select id="monthSelect" defaultValue={currentDate.getMonth()}>
+              {Array.from({ length: 12 }, (_, idx) => (
+                <option value={idx} key={idx}>
+                  {new Date(0, idx).toLocaleString('default', { month: 'long' })}
+                </option>
+              ))}
+            </select>
+            <select id="yearSelect" defaultValue={currentDate.getFullYear()}>
+              {Array.from({ length: 20 }, (_, idx) => (
+                <option value={2020 + idx} key={idx}>{2020 + idx}</option>
+              ))}
+            </select>
+            <button onClick={handleMonthYearChange}>Go</button>
+          </div>
+        )}
+
+        <div className="days-row">
+          {daysOfWeek.map((day) => (
+            <div key={day} className="day-name">{day}</div>
+          ))}
+        </div>
+
+        <div className={`calendar-grid ${selectedDate ? 'blur-others' : ''}`}>
+          {renderCalendar()}
+        </div>
+        
+      </div>
+
+      {formVisible && (
+        <div className="form-popup">
+          <h3>Log Work - {selectedDate.toDateString()}</h3>
+<div className="form-group">
+  <label>Project Type:</label>
+  <select
+    value={formData.projectType}
+    onChange={(e) => setFormData({ ...formData, projectType: e.target.value, projectName: '', phase: '', task: '' })}
+  >
+    <option value="">Select</option>
+    {[...new Set(projectData.map(p => p.projectType))].map((type) => (
+      <option key={type} value={type}>{type}</option>
+    ))}
+  </select>
+</div>
+
+<div className="form-group">
+  <label>Project Name:</label>
+  <select
+    value={formData.projectName}
+    onChange={(e) => setFormData({ ...formData, projectName: e.target.value, phase: '', task: '' })}
+  >
+    <option value="">Select</option>
+    {projectData
+      .filter(p => p.projectType === formData.projectType)
+      .map((p) => (
+        <option key={p.projectName} value={p.projectName}>{p.projectName}</option>
+      ))}
+  </select>
+</div>
+
+<div className="form-group">
+  <label>Phase:</label>
+  <select
+    value={formData.phase}
+    onChange={(e) => setFormData({ ...formData, phase: e.target.value })}
+  >
+    <option value="">Select</option>
+    {selectedProject?.projectPhases?.map((phase) => (
+      <option key={phase} value={phase}>{phase}</option>
+    ))}
+  </select>
+</div>
+
+<div className="form-group">
+  <label>Task:</label>
+  <select
+    value={formData.task}
+    onChange={(e) => setFormData({ ...formData, task: e.target.value })}
+  >
+    <option value="">Select</option>
+    {selectedProject?.tasks?.map((task) => (
+      <option key={task.taskName} value={task.taskName}>{task.taskName}</option>
+    ))}
+  </select>
+</div>
+
+         
+
+          <div className="form-group">
+            <label>Hours Worked:</label>
+            <input
+              type="number"
+              min="0"
+              value={formData.hours}
+              onChange={(e) => setFormData({ ...formData, hours: e.target.value })}
+            />
+          </div>
+
+         <div className="button-group">
+  <button onClick={handleCancel} className="cancel-btn" type="button">Cancel</button>
+  <button onClick={handleApproveAll} className="approve-btn" type="button">Approve </button>
+  <button onClick={handleAddOrUpdate} className="add-btn" type="button">
+    {formData.isEditing ? 'Update' : 'Add'}
+  </button>
+</div>
+
+        </div>
+      )}
+
+     
+     
+       <style>{`
+        * { box-sizing: border-box; }
+.entry-item.rejected {
+  background: #ffe0e0;
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+.form-popup {
+  animation: fadeSlideIn 0.3s ease-out forwards;
+  opacity: 0;
+  transform: translateX(-50%) translateY(20px);
+}
+
+@keyframes fadeSlideIn {
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+.calendar-box {
+  transition: transform 0.25s ease, background 0.3s ease;
+}
+
+.calendar-box:hover {
+  transform: scale(1.04);
+}
+.entry-item {
+  animation: fadeInUp 0.4s ease forwards;
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+@keyframes fadeInUp {
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
-
-@keyframes glow {
-  0% {
-    box-shadow: 0 0 0 rgba(0, 123, 255, 0);
-  }
-  50% {
-    box-shadow: 0 0 15px rgba(0, 123, 255, 0.4);
-  }
-  100% {
-    box-shadow: 0 0 0 rgba(0, 123, 255, 0);
-  }
+.calendar-grid {
+  transition: opacity 0.4s ease;
+  opacity: 1;
 }
 
-@keyframes zoomFadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+.calendar-grid.fade-out {
+  opacity: 0;
 }
 
-@keyframes slideLeftIn {
-  0% {
-    transform: translateX(60px);
-    opacity: 0;
-  }
-  100% {
-    transform: translateX(0);
-    opacity: 1;
-  }
+        .container {
+          font-family: 'Segoe UI', sans-serif;
+          padding: 40px;
+          background-color: #eef2f7;
+          min-height: 100vh;
+          display: flex;
+          justify-content: center;
+        }
+
+        .calendar-box-wrapper {
+          width: 100%;
+          max-width: 950px;
+          background: #ffffff;
+          padding: 30px;
+          border-radius: 16px;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+          .header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background-color: #f7f9fb;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  margin-bottom: 24px;
+  gap: 16px;
+  flex-wrap: nowrap; /* ✅ prevent wrap on larger screens */
 }
 
-@keyframes ripple {
-  to {
-    box-shadow: 0 0 0 15px rgba(0, 123, 255, 0);
-  }
+.header-title h1 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+  white-space: nowrap;
 }
 
-/* ---------- Controls ---------- */
-select.form-select {
-  border: 1px solid #007bff;
-  transition: 0.3s ease-in-out;
-  animation: zoomFadeIn 0.4s ease;
-}
-select.form-select:focus {
-  border-color: #0056b3;
-  box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+.header-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  white-space: nowrap;
+  flex-shrink: 0; /* ✅ prevent it from shrinking */
 }
 
-/* ---------- Week Cards ---------- */
-.card {
-  border: 1px solid #d4eaff;
-  background-color: #f0f8ff;
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
-  position: relative;
+.header-controls select {
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #fff;
 }
 
-
-
-
-.card.bg-primary {
-  background-color: #007bff !important;
-  color: white;
-}
-
-/* ---------- Table ---------- */
-.table {
-  transition: all 0.2s ease-in-out;
-  animation: zoomFadeIn 0.6s ease;
-}
-.table thead th {
-  background-color: #e3f2fd;
-  color: #004085;
-  font-size: 13px;
-  text-transform: uppercase;
-}
-
-td {
-  transition: all 0.25s ease;
-  cursor: pointer;
-  position: relative;
-  animation: zoomFadeIn 0.3s ease;
-}
-td:hover {
-  background-color: rgba(0, 123, 255, 0.05);
-}
-td div:hover {
-  transform: scale(1.05);
-  transition: transform 0.3s ease;
-}
-
-td.bg-success,
-td.bg-danger,
-td.bg-warning,
-td.bg-info {
-  animation: glow 1.5s infinite ease-in-out;
-}
-
-/* ---------- Sticky Note Icon ---------- */
-svg {
-  transition: transform 0.3s ease, color 0.3s ease;
-}
-svg:hover {
-  transform: rotate(10deg) scale(1.3);
-  color: #007bff;
-}
-
-/* ---------- Buttons ---------- */
-button.btn {
-  transition: all 0.3s ease-in-out;
-  animation: fadeSlideIn 0.8s ease;
-}
-button.btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
-}
-.btn-success {
-  animation: glow 2s infinite;
-}
-.btn-outline-primary:hover {
+.toggle-btn {
+  padding: 8px 12px;
+  font-size: 14px;
   background-color: #007bff;
   color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-/* ---------- Textarea ---------- */
-textarea.form-control {
-  transition: all 0.2s ease-in-out;
-  border-color: #007bff;
-  animation: fadeSlideIn 0.5s ease;
-}
-textarea.form-control:focus {
-  border-color: #0056b3;
-  box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
+.toggle-btn:hover {
+  background-color: #0056b3;
 }
 
-/* ---------- Chart Headings ---------- */
-h5 {
-  color: #003e7e;
-  margin-bottom: 10px;
-  animation: slideLeftIn 0.6s ease;
+/* 📱 Mobile styles */
+@media (max-width: 768px) {
+  .header-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header-controls {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .header-controls select,
+  .header-controls .toggle-btn {
+    width: 100%;
+  }
 }
 
-/* ---------- Chart Canvas ---------- */
-canvas {
-  max-width: 100% !important;
-  margin: auto;
-  animation: zoomFadeIn 0.6s ease-in-out;
-}
-
-/* ---------- Summary Table ---------- */
-.table-striped tbody tr:nth-of-type(odd) {
-  background-color: #f4faff;
-}
-.table-dark th {
-  background-color: #004085;
-  color: #fff;
-}
-
-/* ---------- Misc ---------- */
-.table-bordered td,
-.table-bordered th {
-  border: 1px solid #dee2e6;
-}
-/* TimesheetCalendar.css */
-/* TimesheetCalendar.css */
-.uniform-summary-card {
-  min-height: 320px;
+.header-section {
   display: flex;
-  flex-direction: column;
   justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 15px 20px;
+  background-color: #f0f2f5;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
-@media (max-width: 991px) {
-  .summary-card {
-    text-align: center;
+
+.header-left h1 {
+  margin: 0;
+  font-size: 24px;
+  color: #333;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.header-right select {
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  min-width: 160px;
+}
+
+.toggle-btn {
+  padding: 8px 12px;
+  font-size: 14px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.toggle-btn:hover {
+  background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+  .header-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
   }
 
-  .nav-tabs {
-    flex-wrap: wrap;
+  .header-right {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
   }
 
-  .nav-tabs .nav-item {
-    flex: 1 0 100%;
-    text-align: center;
+  .header-right select,
+  .header-right .toggle-btn {
+    width: 100%;
   }
 }
-`}
-</style>
-  <FaRegStickyNote 
-    style={{ cursor: 'pointer', marginTop: 4 }}
-    onClick={() => setEditingCell([rIdx, cIdx])}
-  />
-  
-  {editingCell?.[0] === rIdx && editingCell?.[1] === cIdx && (
-  <>
-    <textarea
-      className="form-control"
-      value={cell.description}
-      onChange={(e) => {
-        const copy = data.map(row => row.slice());
-        copy[rIdx][cIdx].description = e.target.value;
-        setData(copy);
-      }}
-    />
 
-    <div className="d-flex flex-column mt-1">
-      <input
-        type="text"
-        className="form-control mb-1"
-        placeholder="Project"
-        value={cell.project || ''}
-        onChange={(e) => {
-          const copy = data.map(row => row.slice());
-          copy[rIdx][cIdx].project = e.target.value;
-          setData(copy);
-        }}
-        onBlur={() => setEditingCell(null)}
-      />
+@media (max-width: 600px) {
+  .header-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
 
-      <div className="form-check">
-        <input
-          className="form-check-input"
-          type="checkbox"
-          checked={cell.isProjectStart || false}
-          onChange={(e) => {
-            const copy = data.map(row => row.slice());
-            copy[rIdx][cIdx].isProjectStart = e.target.checked;
-            setData(copy);
-          }}
-        />
-        <label className="form-check-label">Start</label>
-      </div>
+  .header-right {
+    width: 100%;
+    justify-content: flex-start;
+  }
 
-      <div className="form-check">
-        <input
-          className="form-check-input"
-          type="checkbox"
-          checked={cell.isProjectEnd || false}
-          onChange={(e) => {
-            const copy = data.map(row => row.slice());
-            copy[rIdx][cIdx].isProjectEnd = e.target.checked;
-            setData(copy);
-          }}
-        />
-        <label className="form-check-label">End</label>
-      </div>
-    </div>
-  </>
-)}
-
-</td>
-
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <button className="btn btn-success mb-4" onClick={save}>Save</button>
-      </>
-    );
-  };
-
-  const renderWeeklySummary = () => {
-    if (!summary.length || summary.length !== valid.length) return null;
-    return (
-      <div className="table-responsive mb-4">
-        <div className="card mb-4">
-  <div className="card-body">
-       <h5 className="card-title">Weekly Summary</h5>
-        <table className="table table-striped text-center">
-          <thead className="table-dark"><tr>
-            <th>Date</th><th>IN</th><th>OUT</th><th>LEAVE</th><th>ONDUTY</th><th>Project</th>
-          </tr></thead>
-          <tbody>
-  {valid.map((day, idx) => {
-    const row = summary[idx];
-    const projectNames = new Set();
-    for (let r = 0; r < data.length; r++) {
-      if (data[r][idx]?.project) {
-        projectNames.add(data[r][idx].project);
-      }
-    }
-    return (
-      <tr key={idx}>
-        <td>{`${weekdays[day.getDay()]} ${day.getDate()}`}</td>
-        <td>{row.IN}</td>
-        <td>{row.OUT}</td>
-        <td>{row.LEAVE}</td>
-        <td>{row.ONDUTY}</td>
-        <td>{Array.from(projectNames).join(', ') || '-'}</td>
-      </tr>
-    );
-  })}
-</tbody>
-
-        </table>
-      </div> </div>
-</div>
-    );
-  };
-  if (!selectedEmployee) return <div className="p-5 text-center">Please select an employee to view the timesheet.</div>;
+  .header-right select,
+  .header-right button {
+    width: auto;
+  }
+}
 
 
-  return (
-     <div className="d-flex" style={{ minHeight: '100vh' }}>
-    {/* SIDEBAR */}
-<div
-  className={`bg-primary text-white transition-all`}
-  style={{
-    width: sidebarOpen ? '240px' : '0',
-    overflow: 'hidden',
-    transition: 'width 0.3s',
-    minHeight: '100vh'
-  }}
->
-  {sidebarOpen && <TLsidebar />}
-</div>
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.controls select {
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #fff;
+}
+
+.toggle-btn {
+  padding: 8px 14px;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.toggle-btn:hover {
+  background-color: #5a6268;
+}
+
+        .calendar-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .calendar-header h2 {
+          cursor: pointer;
+          font-size: 24px;
+          font-weight: 600;
+          color: #333;
+        }
+
+        .calendar-header button {
+          background: #4a90e2;
+          color: white;
+          border: none;
+          padding: 8px 18px;
+          border-radius: 8px;
+          font-size: 16px;
+          transition: background 0.3s;
+        }
+
+        .calendar-header button:hover {
+          background: #357ac9;
+        }
+
+        .month-year-picker {
+          display: flex;
+          gap: 12px;
+          margin: 16px 0;
+        }
+          .approve-btn {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 18px;
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.approve-btn:hover {
+  background-color: #0056b3;
+}
 
 
-    {/* MAIN AREA */}
-    <div className="flex-grow-1 bg-light">
-      {/* TOPBAR */} <div style={{ marginLeft: '0px', padding: '0', flex: 1 }}>
-      <div className="bg-white shadow-sm" style={{ height: '70px', zIndex: 1 }}>
-<TLtopbar onToggle={() => setSidebarOpen(!sidebarOpen)} />
+        .month-year-picker select,
+        .month-year-picker button {
+          padding: 8px 12px;
+          border-radius: 6px;
+          border: 1px solid #ccc;
+          font-size: 14px;
+        }
 
-      </div></div>
+        .month-year-picker button {
+          background: #007bff;
+          color: white;
+          border: none;
+          cursor: pointer;
+        }
 
-      {/* CONTENT */}
-      <div className="container-fluid p-4" style={{ marginTop: '20px' }}>
-      <h2 className="mb-4">Employee Timesheet</h2>
+        .days-row {
+          display: grid;
+          grid-template-columns: repeat(7, 1fr);
+          margin-top: 20px;
+          font-weight: bold;
+          text-align: center;
+          color: #333;
+        }
 
+        .calendar-grid {
+          display: grid;
+          grid-template-columns: repeat(7, 1fr);
+          gap: 10px;
+          margin-top: 12px;
+        }
 
-      <div className="d-flex gap-2 mb-3"><select
-  className="form-select w-auto me-2"
-  value={selectedEmployee}
-  onChange={(e) => setSelectedEmployee(e.target.value)}
->
-  {teamMembers.map((name, i) => (
-    <option key={i} value={name}>{name}</option>
-  ))}
-</select>
+        .calendar-box {
+          height: 160px;
+          padding: 10px;
+          background: #f5f7fa;
+          border-radius: 10px;
+          position: relative;
+          cursor: pointer;
+          overflow-y: auto;
+          transition: 0.3s ease all;
+          border: 1px solid #e0e6ed;
+        }
 
-        <select className="form-select w-auto" value={viewMode} onChange={e=>setViewMode(e.target.value)}>
-          <option value="WEEKLY">Weekly</option>
-          <option value="MONTHLY">Monthly</option>
-          <option value="YEARLY">Yearly</option>
-        </select>
-        <select className="form-select w-auto" value={month} onChange={e=>setMonth(Number(e.target.value))}>
-          {months.map((m,i)=><option key={i} value={i}>{m}</option>)}
-        </select>
-        <select className="form-select w-auto" value={year} onChange={e=>setYear(Number(e.target.value))}>
-          {Array.from({length:10},(_,i)=>today.getFullYear()-5+i)
-            .map(y=><option key={y} value={y}>{y}</option>)}
-        </select>
-      </div>
+        .calendar-box:hover {
+          background: #eaf3fe;
+        }
 
-      {viewMode==='WEEKLY' && <>
-        {renderWeekGrid()}
-        {renderTimesheetTable()}
-        {renderWeeklySummary()}
-        {selectedWeekIdx!==null && <>
-<div className="card mb-4">
-  <div className="card-body">
-    <h5 className="card-title">Bar Chart: Worked Hours</h5>
-    <Bar data={barChartData} options={chartOptions} />
-  </div>
-</div>
-<div className="card mb-4">
-  <div className="card-body">
-    <h5 className="card-title">Pie Chart: Status Breakdown</h5>
-  <div style={{ maxWidth: '300px', margin: 'auto', animation:'none' }}>
-  <Pie data={pieChartData} />
-</div>
-  </div>
-</div>
-<div className="card mb-4">
-  <div className="card-body">
-    <h5 className="card-title">Total Hours This Week</h5>
-    <p className="card-text"><strong>{totalHoursWorked.toFixed(1)} hrs</strong></p>
-  </div>
-</div>
-        </>}
-      </>}
+        .calendar-box.selected {
+          background-color: #d4ecff;
+          border: 2px solid #3399ff;
+        }
 
-      {viewMode==='MONTHLY' && <>
-  <div className="card mb-4">
-  <div className="card-body">
-    <h5 className="card-title">
-    Monthly Summary: {months[month]} {year}</h5>
-    <table className="table table-bordered text-center">
-      <thead className="table-dark">
-        <tr>
-          <th>Day</th><th>IN</th><th>OUT</th><th>LEAVE</th><th>ONDUTY</th><th>Total</th>
-        </tr>
-      </thead>
-      <tbody>
-        {weekdays.map((d,i)=><tr key={i}>
-          <td>{d}</td><td>{monthlySummary[i].IN}</td><td>{monthlySummary[i].OUT}</td>
-          <td>{monthlySummary[i].LEAVE}</td><td>{monthlySummary[i].ONDUTY}</td>
-          <td>{monthlySummary[i].totalHours.toFixed(1)}</td>
-        </tr>)}
-      </tbody>
-    </table>
-     </div>
-  </div>
+        .calendar-box.empty {
+          background-color: transparent;
+          pointer-events: none;
+          border: none;
+        }
 
- <div className="card mb-4">
-  <div className="card-body">
-    <h5 className="card-title">Monthly Worked Hours Chart</h5>
-    <Bar data={monthlyBarData} options={chartOptions} />
-  </div>
-</div>
+        .day-number {
+          font-weight: bold;
+          margin-bottom: 5px;
+        }
 
- <div className="card mb-4">
-  <div className="card-body">
-    <h5 className="card-title">Monthly Status Breakdown</h5>
-    <Pie data={monthlyPieData} />
-  </div>
-  </div>
+        .form-popup {
+          position: fixed;
+          top: 80px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: white;
+          padding: 25px;
+          border-radius: 14px;
+          box-shadow: 0px 6px 30px rgba(0, 0, 0, 0.15);
+          z-index: 999;
+          width: 90%;
+          max-width: 500px;
+          max-height: 80vh;
+          overflow-y: auto;
+        }
 
- <div className="card mb-4">
-  <div className="card-body">
-    <h5 className="card-title">Total Hours This Month</h5>
-    <p className="card-text"><strong>{monthlySummary.reduce((sum, d) => sum + d.totalHours, 0).toFixed(1)} hrs</strong></p>
-  </div>
-</div>
+        .form-popup h3 {
+          margin-bottom: 20px;
+          font-size: 20px;
+          color: #333;
+        }
 
-</>}
+        .form-group {
+          margin-bottom: 16px;
+        }
 
+        .form-group label {
+          display: block;
+          margin-bottom: 6px;
+          font-weight: 500;
+          color: #444;
+        }
 
-{viewMode === 'YEARLY' && (
-  <div className="mb-4">
-    <h5>Yearly Summary: {year}</h5>
+        .form-group input,
+        .form-group select {
+          width: 100%;
+          padding: 10px;
+          border-radius: 6px;
+          border: 1px solid #ccc;
+          background: #f9f9f9;
+          font-size: 14px;
+        }
 
-    {/* Project Hours Summary */}
-    <div className="card mb-4">
-  <div className="card-body">
-    <h5 className="card-title">Projects Handled</h5>
-    <table className="table table-bordered text-center">
-      <thead className="table-secondary">
-        <tr>
-          <th>Project Name</th>
-          <th>Total Hours Worked</th>
-        </tr>
-      </thead>
-      <tbody>
-        {Object.entries(aggregateYearlyProjects(dataMap, year)).map(([project, hours]) => (
-          <tr key={project}>
-            <td>{project}</td>
-            <td>{hours.toFixed(1)}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
- </div>
-</div>
-    {/* Monthly Breakdown */}
-   <div className="card mb-4">
-  <div className="card-body">
-    <h5 className="card-title">Monthly Breakdown</h5>
-    <table className="table table-bordered text-center">
-      <thead className="table-dark">
-        <tr>
-          <th>Month</th>
-          <th>Regular Hours</th>
-          <th>Overtime Hours</th>
-          <th>Late Hours</th>
-          <th>Total Hours</th>
-          <th>Monthly Pay</th>
-        </tr>
-      </thead>
-      <tbody>
-        {calculateYearlySummary(dataMap, year, 48).map((row, idx) => (
-          <tr key={idx}>
-            <td>{months[idx]}</td>
-            <td>{row.regularHours.toFixed(1)}</td>
-            <td>{row.overtimeHours.toFixed(1)}</td>
-            <td>{row.lateHours.toFixed(1)}</td>
-            <td>{row.totalHours.toFixed(1)}</td>
-            <td>${row.monthlyPay.toFixed(2)}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-</div>
-</div>
-    {/* Total Summary */}
-    {(() => {
-      const summary = calculateYearlySummary(dataMap, year, 48);
-      const totals = summary.reduce((acc, m) => {
-        acc.regular += m.regularHours;
-        acc.overtime += m.overtimeHours;
-        acc.late += m.lateHours;
-        acc.total += m.totalHours;
-        acc.pay += m.monthlyPay;
-        return acc;
-      }, { regular:0, overtime:0, late:0, total:0, pay:0 });
+        .button-group {
+          display: flex;
+          justify-content: flex-end;
+          gap: 10px;
+          margin-top: 10px;
+        }
 
-      return (
-        <>
-<div className="card mb-4">
-  <div className="card-body">
-    <h5 className="card-title">Yearly Analytics</h5>
-          <ul className="list-group">
-            <li className="list-group-item">Total Regular Hours: <strong>{totals.regular.toFixed(1)} hrs</strong></li>
-            <li className="list-group-item">Total Overtime Hours: <strong>{totals.overtime.toFixed(1)} hrs</strong></li>
-            <li className="list-group-item">Total Late Hours: <strong>{totals.late.toFixed(1)} hrs</strong></li>
-            <li className="list-group-item">Total Hours Worked: <strong>{totals.total.toFixed(1)} hrs</strong></li>
-            <li className="list-group-item">Yearly Income: <strong>${totals.pay.toFixed(2)}</strong></li>
-          </ul></div>
-</div>
-        </>
-      );
-    })()}<div className="card mb-4">
-  <div className="card-body">
-    <h5 className="card-title">Yearly Work Distribution</h5>
-  <Bar
-    data={{
-      labels: months,
-      datasets: [{
-        label: 'Total Hours Worked',
-        data: calculateYearlySummary(dataMap, year, 48).map(m => m.totalHours),
-        backgroundColor: 'rgba(153, 102, 255, 0.6)'
-      }]
-    }}
-    options={{
-      responsive: true,
-      plugins: {
-        legend: { position: 'top' },
-        title: { display: true, text: 'Monthly Total Hours' }
-      }
-    }}
-  />
-</div>
-  </div>
+        .add-btn {
+          background-color: #28a745;
+          color: white;
+        }
 
-  </div>
-  
-)}
+        .cancel-btn {
+          background-color: #dc3545;
+          color: white;
+        }
 
+        .add-btn,
+        .cancel-btn {
+          padding: 10px 18px;
+          font-size: 14px;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: 0.3s ease;
+        }
 
+        .add-btn:hover {
+          background-color: #218838;
+        }
 
-      <div className="card mb-4">
-  <div className="card-body text-center">
-    <button className="btn btn-outline-primary" onClick={exportToExcel}>Export to Excel</button>
-  </div>
-</div>
-</div>
-</div></div>
+        .cancel-btn:hover {
+          background-color: #c82333;
+        }
+
+        .entry {
+          font-size: 12px;
+          margin-top: 8px;
+        }
+
+        .entry-item {
+          background: #cfe9ff;
+          padding: 6px 8px;
+          border-radius: 6px;
+          margin-bottom: 4px;
+          font-size: 13px;
+        }
+
+        .entry-item .type {
+          font-weight: 600;
+          color: #2b6cb0;
+        }
+
+        .blur-others .calendar-box:not(.selected) {
+          opacity: 0.3;
+          pointer-events: none;
+        }
+      `}</style>
+    </div></div></div></>
   );
 }

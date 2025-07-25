@@ -34,7 +34,7 @@ const HRSidebar = () => {
         <li><NavLink to="/hr/team-reports" className="nav-link">Team Reports</NavLink></li>
         <li><NavLink to="/hr/all-entries" className="nav-link">All Entries</NavLink></li>
         <li><NavLink to="/hr/company-overview">Company Overview</NavLink></li>
-        <li><NavLink to="/hr/employee-reports" className="nav-link">Employee Reports</NavLink></li>
+        <NavLink to="/hr/employee-reports">Employee Reports</NavLink>
       </ul>
 
       {/* 🚪 Logout Button */}

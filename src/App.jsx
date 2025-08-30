@@ -9,7 +9,7 @@ import NotFound from './pages/NotFound';
 // Admin
 import AdminDashboard from './dashboard/admin/Admindashboard';
 import AdminLayout from './dashboard/admin/AdminLayout';
-import AddMember from './dashboard/admin/AddMember';
+import AddMember from './dashboard/admin/Addmember';
 import Members from './dashboard/admin/Members';
 import Department from './dashboard/admin/Department';
 import TotalProject from './dashboard/admin/TotalProject';
